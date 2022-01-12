@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\UserController;
+use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +18,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
+});
+
+Auth::routes();
+
+Route::group(['middleware' => ['web','auth']], function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::post('manage_user/data', [App\Http\Controllers\UserController::class, 'data']);
+	Route::get('manage_user/{kode}/conf', [App\Http\Controllers\UserController::class, 'confirm']);
+    Route::post('manage_user/import', function () {
+        Excel::import(new UsersImport, request()->file('file'));
+        return back();
+    });
+    Route::resource('manage_user', UserController::class);
 });
