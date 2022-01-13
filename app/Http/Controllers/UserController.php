@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\UsersImport;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
@@ -35,8 +36,9 @@ class UserController extends Controller
 
     public function create()
     {
+        $category = Category::get();
         $manage_user = null;
-        return view('manage_user.create', compact('manage_user'));
+        return view('manage_user.create', compact('manage_user','category'));
     }
 
     public function store(Request $request)
@@ -57,7 +59,7 @@ class UserController extends Controller
             $user->name = strip_tags($request->input('name'));
             $user->email = strip_tags($request->input('email'));
             $user->role = strip_tags($request->input('role'));
-            $user->category = strip_tags($request->input('category'));
+            $user->id_category = strip_tags($request->input('category'));
             $user->password = bcrypt($request->input('password'));
             $user->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('insert.success')]);
@@ -67,7 +69,8 @@ class UserController extends Controller
 
     public function data()
     {
-        $data = User::select('users.name','users.email','users.created_at','users.updated_at','users.category','users.role','users.id')
+        $data = User::select('users.name','users.email','users.created_at','users.updated_at','categories.name as category','users.role','users.id')
+        ->join('categories','categories.id','=','users.id_category')
         ->latest()
         ->get();
         return Datatables::of($data)
@@ -82,8 +85,9 @@ class UserController extends Controller
 
     public function edit($id)
     {
+        $category = Category::get();
         $manage_user = User::find($id);
-        return ($manage_user) ? view('manage_user.create', compact('manage_user', 'id')) : $this->showModalError();
+        return ($manage_user) ? view('manage_user.create', compact('manage_user', 'id','category')) : $this->showModalError();
     }
 
 
@@ -107,7 +111,7 @@ class UserController extends Controller
             $user->name = strip_tags($request->input('name'));
             $user->email = strip_tags($request->input('email'));
             $user->role = strip_tags($request->input('role'));
-            $user->category = strip_tags($request->input('category'));
+            $user->id_category = strip_tags($request->input('category'));
             $user->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('update.success')]);
         }

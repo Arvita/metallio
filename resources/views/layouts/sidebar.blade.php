@@ -45,18 +45,34 @@ $level = Auth::user()->role; ?>
                         <p>Dashboard</p>
                     </a>
                 </li>
+                @if (in_array($level, [1]))
+                <li class="nav-item">
+                    <a href="#">
+                        <i class="fas fa-home"></i>
+                        <p>Exam</p>
+                    </a>
+                </li>
+                @endif
+                @if (in_array($level, [0]))
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
-                    <h4 class="text-section">Finance</h4>
+                    <h4 class="text-section">Quiz Bank</h4>
                 </li>
                 <li class="nav-item">
                     <a href="starter-template.html">
                         <i class="far fa-file-excel"></i>
-                        <p>Annual Report</p>
+                        <p>Bank Questions</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="starter-template.html">
+                        <i class="far fa-file-excel"></i>
+                        <p>Exam</p>
+                    </a>
+                </li>
+                @endif
                 @if (in_array($level, [0]))
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
@@ -69,6 +85,12 @@ $level = Auth::user()->role; ?>
                     <a href="{{ url('manage_user') }}">
                         <i class="far fa-user"></i>
                         <p>Management User</p>
+                    </a>
+                </li>
+                <li class="nav-item {{ isset($m_category) ? $m_category : '' }}">
+                    <a href="{{ url('category') }}">
+                        <i class="far fa-user"></i>
+                        <p>Category</p>
                     </a>
                 </li>
                 @endif
