@@ -1,0 +1,13 @@
+
+.durationpicker-innercontainer {
+    display: inline;
+}
+
+.durationpicker-duration {
+    display: inline;
+}
+
+.durationpicker-label {
+    margin-bottom: 100px;
+    display: inline;
+}

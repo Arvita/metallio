@@ -58,12 +58,12 @@ $level = Auth::user()->role; ?>
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
-                    <h4 class="text-section">Quiz Bank</h4>
+                    <h4 class="text-section">Quiz Setting</h4>
                 </li>
-                <li class="nav-item">
-                    <a href="starter-template.html">
+                <li class="nav-item {{ isset($m_bank_question) ? $m_bank_question : '' }}">
+                    <a href="{{ url('bank_question') }}">
                         <i class="far fa-file-excel"></i>
-                        <p>Bank Questions</p>
+                        <p>Bank Questions</p>                        
                     </a>
                 </li>
                 <li class="nav-item">

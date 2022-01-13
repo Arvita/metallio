@@ -20,7 +20,7 @@ class UsersImport implements ToModel
             'email'    => $row[1],
             'password' => Hash::make($row[2]),
             'role'    => $row[3],
-            'category'    => $row[4],
+            'id_category'    => $row[4],
         ]);
     }
 }
