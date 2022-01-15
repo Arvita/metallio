@@ -3,7 +3,9 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankQuestionController;
+use App\Http\Controllers\CreateExamController;
 use App\Http\Controllers\DetailBankQuestionController;
+use App\Http\Controllers\DetailCreateExamController;
 use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -58,7 +60,18 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::post('/detail_bank_question/deleteanswer', [App\Http\Controllers\DetailBankQuestionController::class, 'deleteanswer']);
     Route::get('/detail_bank_question/getdetailquestionbank/{id}/', [App\Http\Controllers\DetailBankQuestionController::class, 'getdetailquestionbank']);
     Route::post('/detail_bank_question/delete/', [App\Http\Controllers\DetailBankQuestionController::class, 'delete']);
-    // Route::resource('detail_bank_question', DetailBankQuestionController::class);
+
+    Route::post('create_exam/data', [App\Http\Controllers\CreateExamController::class, 'data']);
+	Route::get('create_exam/{kode}/conf', [App\Http\Controllers\CreateExamController::class, 'confirm']);
+    Route::resource('create_exam', CreateExamController::class);
+
+    Route::get('detail_create_exam/{kode}/detail', [App\Http\Controllers\DetailCreateExamController::class, 'index']); 
+    Route::get('detail_create_exam/getallquestion/{id}', [App\Http\Controllers\DetailCreateExamController::class, 'getAllQuestion']);   
+    Route::get('/detail_create_exam/list_bank/{id}', [App\Http\Controllers\DetailCreateExamController::class, 'list_bank']);   
+    Route::post('/detail_create_exam/list_question', [App\Http\Controllers\DetailCreateExamController::class, 'list_question']);
+    Route::get('/detail_create_exam/create/{id}/{kode}', [App\Http\Controllers\DetailCreateExamController::class, 'create']);
+    Route::post('/detail_create_exam/generate/',  [App\Http\Controllers\DetailCreateExamController::class, 'generate']);
+    Route::get('/detail_create_exam/getanswer/{id}', [App\Http\Controllers\DetailCreateExamController::class, 'getAnswer']);
 
     Route::post('/file/upload', [App\Http\Controllers\FileController::class, 'upload'])->name('file.upload');
 });

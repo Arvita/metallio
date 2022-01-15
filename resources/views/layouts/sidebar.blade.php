@@ -66,8 +66,8 @@ $level = Auth::user()->role; ?>
                         <p>Bank Questions</p>                        
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="starter-template.html">
+                <li class="nav-item {{ isset($m_create_exam) ? $m_create_exam : '' }}">
+                    <a href="{{ url('create_exam') }}">
                         <i class="far fa-file-excel"></i>
                         <p>Exam</p>
                     </a>

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class BankQuestion extends Model
+class CreateExam extends Model
 {
     use HasFactory;
     protected $primaryKey = 'id';
@@ -15,7 +15,7 @@ class BankQuestion extends Model
 
     protected $fillable = [
         'name',
-        'id_category',
+        'duration',
     ];
     protected static function boot(){
         parent::boot();
@@ -25,5 +25,6 @@ class BankQuestion extends Model
                 $model->{$model->getKeyName()} = Str::uuid();
             }
         });
+
     }
 }

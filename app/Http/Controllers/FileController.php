@@ -35,7 +35,7 @@ class FileController extends Controller
 
 
 
-            $request->file('upload')->move(public_path().'upload/', $fileName);
+            $request->file('upload')->move(public_path().'/upload/', $fileName);
 
 
 

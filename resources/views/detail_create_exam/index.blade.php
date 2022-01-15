@@ -4,7 +4,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h4 class="page-title">Detail Bank Question</h4>
+                <h4 class="page-title">Detail Exam</h4>
                 <ul class="breadcrumbs">
                     <li class="nav-home">
                         <a href="{{ url('home') }}">
@@ -21,13 +21,13 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Bank Question</a>
+                        <a href="#">Exam</a>
                     </li>
                     <li class="separator">
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Detail Bank Question</a>
+                        <a href="#">Detail Exam</a>
                     </li>
                 </ul>
             </div>
@@ -41,12 +41,12 @@
                                         <table style="color: #707070;"
                                             class="table table-bordered table-hover standard-padding mt20">
                                             <tr>
-                                                <th style="width: 25%;">Bank</th>
-                                                <th>{{ $bank_question->name }}</th>
+                                                <th style="width: 25%;">Exam</th>
+                                                <th>{{ $create_exam->name }}</th>
                                             </tr>
                                             <tr>
-                                                <th style="width: 25%;">Category</th>
-                                                <th>{{ $bank_question->category }}</th>
+                                                <th style="width: 25%;">Duration</th>
+                                                <th>{{ $create_exam->duration }} Minutes</th>
                                             </tr>
                                             <tr>
                                                 <th style="width: 25%;">Total Question</th>
@@ -59,13 +59,13 @@
                         </div>
                         <div class="card-body">
                             <div class="col-sm-6">
-                                <a href="{{ url('detail_bank_question/create/' . $bank_question->id) }}"
-                                    class=" btn btn-primary btn-round ">
+                                <button data-url="{{ url('detail_create_exam/list_bank/' . $create_exam->id) }}"
+                                    class="ajax_modal btn btn-primary btn-round ">
                                     <i class="fa fa-plus"></i>
                                     Add Question
-                                </a>
+                                </button>
                                 <button
-                                    data-url="{{ url('detail_bank_question/confirm_delete/deleteall/' . $bank_question->id) }}"
+                                    data-url="{{ url('detail_create_exam/confirm_delete/deleteall/' . $create_exam->id) }}"
                                     class="ajax_modal_popup btn btn-primary btn-round ">
                                     <i class="fa fa-trash-o"></i>
                                     Delete All
@@ -125,9 +125,9 @@
             </style>
         @endpush
         @push('content-js')
-        <script src="{{ asset('assets/js/plugin/accordion/jquery-ui.min.js') }}"></script>
+            <script src="{{ asset('assets/js/plugin/accordion/jquery-ui.min.js') }}"></script>
             <script type="text/javascript">
-                var detail_bank_question;
+                var detail_create_exam;
                 var ajaxModal = $('#ajax-modal');
                 var ajaxModalPopup = $('#ajax-modal-popup');
                 var ajaxModalElement = $('#ajax-modal-element');
@@ -144,25 +144,27 @@
                         });
                     }
                     if (!$('#answer' + id).length) {
-                            $.ajax({
-                                url: `{{ url('detail_bank_question/getanswer/`+  id +`') }}`,
-                                type: 'GET',
-                                dataType: 'json',
-                                success: function(data) {
-                                    $('#question' + id).append('<ul id="answer' + id +
-                                        '" class="list-group mt20"></ul>');
-                                    $.each(data, function(index, val) {
-                                        if (val.status == '1') {
-                                            $('#answer' + id).append(
-                                                '<li class="list-group-item">' +
-                                                val.answer + '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>');
-                                        } else {
-                                            $('#answer' + id).append('<li class="list-group-item">' + val
-                                                .answer + '</li>');
-                                        }
-                                    });
-                                }
-                            })
+                        $.ajax({
+                            url: `{{ url('detail_create_exam/getanswer/`+  id +`') }}`,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                $('#question' + id).append('<ul id="answer' + id +
+                                    '" class="list-group mt20"></ul>');
+                                $.each(data, function(index, val) {
+                                    if (val.status == '1') {
+                                        $('#answer' + id).append(
+                                            '<li class="list-group-item">' +
+                                            val.answer +
+                                            '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>'
+                                            );
+                                    } else {
+                                        $('#answer' + id).append('<li class="list-group-item">' + val
+                                            .answer + '</li>');
+                                    }
+                                });
+                            }
+                        })
                     }
                 }
 
@@ -181,7 +183,7 @@
                         "processing": true,
                         "serverSide": true,
                         "ajax": {
-                            "url": "{{ url('detail_bank_question/getallquestion/' . $bank_question->id) }}",
+                            "url": "{{ url('detail_create_exam/getallquestion/' . $create_exam->id) }}",
                             "type": "GET",
                             dataType: 'json',
                         },
@@ -195,10 +197,22 @@
                                         <h3>Question - ` + (meta.row + meta.settings._iDisplayStart + 1) +
                                         ` <span style="float:right;">` + typeQuestion + `  </span></h3>
                                         <div id="question` + data.id + `">
+                                        <table style="color: #707070; width: 50%; font-size:12px;" class="table table-sm table-hover mb20">
+                                        <tr>
+                                        <th style="width: 25%;">Bank </th>
+                                        <th>` + data.bank + `</th>
+                                        </tr>
+                                        <tr>
+                                        <th style="width: 25%;">Kategori</th>
+                                        <th>` + data.category + `</th>
+                                        </tr>
+                                            </table>
                                         <div class="question mt20" style="word-break: break-word;">
                                         <p style="color: #707070; text-align:center;"><i>Question</i></p>
                                         <div class="col-sm-12"> 
-                                        ` +data.question+ `</div><br><div class="col-sm-12"><button type="button" onclick="getAnswer('` + data.id + `')" class="btn-xs btn-primary btn-round">Look Answer</button></div><br>
+                                        ` + data.question +
+                                        `</div><br><div class="col-sm-12"><button type="button" onclick="getAnswer('` +
+                                        data.id + `')" class="btn-xs btn-primary btn-round">Look Answer</button></div><br>
                                         </div>
                                         <div>
                                         `;
