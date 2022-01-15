@@ -35,11 +35,13 @@
                 <div class="col-md-12">
                     <div class="card">
                         <form method="POST" id="inputMultipleQuestion" enctype="multipart/formdata"
-                            action="{{ url('/detail_bank_question/question_submit/') }}">
+                            action="{{ url('/detail_bank_question/question_update/') }}">
                             {!! csrf_field() !!}
-                            <input type="text" name="id_bank_question" id="id_bank_question" value="{{ $id }}"
-                                hidden>
+                            <input type="text" name="id_bank_question" id="id_bank_question"
+                                value="{{ $detail_bank_question->id_bank_question }}" hidden>
+                            <input type="text" name="id" id="id" value="{{ $id }}" hidden>
                             <input type="text" name="_answer" hidden>
+                            <input type="text" name="idd" id="idd" hidden>
                             <div class="card-header">
                                 <div class="container-fluid">
                                     <div class="row">
@@ -49,7 +51,8 @@
                                                     style="color: #707070; font-weight: bold;">- Exam Question -</label>
                                             </center>
                                             <div class="question mt20 mb20">
-                                                <textarea name="question" id="question" cols="30" rows="10"></textarea>
+                                                <textarea name="question" id="question" cols="30"
+                                                    rows="10">{{ $detail_bank_question->question }}</textarea>
                                             </div>
                                             <center>
                                                 <label for="number" class="label-control"
@@ -63,7 +66,7 @@
                                 </div>
                             </div>
                             <div class=card-body>
-                                <a href="{{ url('detail_bank_question/' . $id . '/detail') }}"
+                                <a href="{{ url('detail_bank_question/' . $detail_bank_question->id_question . '/detail') }}"
                                     class="btn btn-warning mt20">Cancel</a>
                                 <button type="button" onclick="submitForm()" da class="btn btn-primary mt20">Save</button>
                             </div>
@@ -113,6 +116,71 @@
                     });
                 }
 
+                function eachanswer() {
+                    const data = "{{ $detail_bank_question->id }}";
+                    $.ajax({
+                        url: `{{ url('detail_bank_question/getanswer/`+data+`') }}`,
+                        contentType: "json",
+                        success: function(response) {
+                            $.each(response, function(index, val) {
+                                let i = Math.floor(Math.random() * 10000);
+                                if (val.status == 1) {
+                                    $('#lockAndAddAnswer').after(`
+                    <div class="answer` + i + ` mt20">
+                    <label class="radio-inline">
+                    <input type="radio" class="square-blue" name="correct" value="` + val.id + `" checked> <label for="number" class="label-control" style="color: #707070; font-weight: bold;">Correct Answer </label>
+                    </label>
+                    <button type="button" id="removeAnswer` + i + `" onclick="remove(` + i + `)" da value="` + val.id +
+                                        `" class="btn btn-link btn-danger remove` + i + `" style="float:right"><i class="fa fa-trash"></i></button>
+                    <textarea name="answer` + val.id + `" id="answer` + val.id + `" cols="30" rows="10" required>` +
+                                        val.answer + `</textarea>
+                    </div>
+                    `);
+                                    CKEDITOR.replace("answer" + val.id, {
+                                        filebrowserUploadUrl: "{{ route('file.upload', ['_token' => csrf_token()]) }}",
+                                        filebrowserUploadMethod: 'form'
+                                    });
+                                    CKEDITOR.config.language = 'id';
+                                    CKEDITOR.config.uiColor = 'lightgrey';
+                                    CKEDITOR.config.height = 60;
+                                    CKEDITOR.config.toolbarCanCollapse = true;
+                                    myStyle()
+                                    arrAnswer.push(val.id)
+
+                                } else {
+                                    $('#lockAndAddAnswer').after(`
+                    <div class="answer` + i + ` mt20">
+                    <label class="radio-inline">
+                    <input type="radio" class="square-blue" name="correct" value="` + val.id + `"> <label for="number" class="label-control" style="color: #707070; font-weight: bold;"> Correct Answer </label>
+                    </label>
+                    <button type="button" id="removeAnswer` + i + `" onclick="remove(` + i + `)" da value="` + val.id +
+                                        `" class="btn btn-link btn-danger remove` + i + `" style="float:right"><i class="fa fa-trash"></i></button>
+                    <textarea name="answer` + val.id + `" id="answer` + val.id + `" cols="30" rows="10" required>` +
+                                        val.answer + `</textarea>
+                    </div>
+                    `);
+
+
+                                    CKEDITOR.replace("answer" + val.id, {
+                                        filebrowserUploadUrl: "{{ route('file.upload', ['_token' => csrf_token()]) }}",
+                                        filebrowserUploadMethod: 'form'
+                                    });
+                                    CKEDITOR.config.language = 'id';
+                                    CKEDITOR.config.uiColor = 'lightgrey';
+                                    CKEDITOR.config.height = 60;
+                                    CKEDITOR.config.toolbarCanCollapse = true;
+                                    myStyle()
+                                    arrAnswer.push(val.id)
+
+                                }
+                            });
+                            $('.questiondiv').append(
+                                '<button type="button" id="addAnswer" onclick="answer()" da class="btn btn-primary mt20">Add Answer <i class="fa fa-plus"></i></button>'
+                            );
+                        }
+                    });
+                }
+
                 function myFunc() {
                     CKEDITOR.replace("question", {
                         filebrowserUploadUrl: "{{ route('file.upload', ['_token' => csrf_token()]) }}",
@@ -124,9 +192,59 @@
                     CKEDITOR.config.toolbarCanCollapse = true;
                 }
 
-
                 function defineFirstAnswerAndHide() {
                     $('.btn-footer').hide();
+                }
+
+                function remove(value) {
+                    $.post("{{ url('/detail_bank_question/deleteanswer/') }}", {
+                        _token: "{{ csrf_token() }}",
+                        id: $('#removeAnswer' + value).val()
+                    }, function(data, textStatus, xhr) {
+                        var msg;
+                        if (data.stat) {
+                            if ($('.alert-success')) {
+                                $('.alert-success').remove();
+                            }
+                            if ($('.alert-danger')) {
+                                $('.alert-danger').remove();
+                            }
+                            msg =
+                                '<div class="alert alert-success mt20"><i class="fa fa-check-circle"></i><strong> Berhasil !</strong> ' +
+                                data.msg + '</div>';
+                            $('#addAnswer').after(msg);
+                            if (value > -1) {
+                                arrAnswer.splice(arrAnswer.indexOf(value), 1);
+                            }
+
+                            $('.answer' + value).hide('slow', function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            if ($('.alert-danger')) {
+                                $('.alert-danger').remove();
+                            }
+                            if ($('.alert-success')) {
+                                $('.alert-success').remove();
+                            }
+                            msg =
+                                '<div class="alert alert-danger mt20"><i class="fa fa-check-circle"></i><strong> Kesalahan !</strong> ' +
+                                data.msg + '</div>';
+                            $('#addAnswer').after(msg);
+                        }
+                    });
+
+                    // console.log($('#removeAnswer'+value).val());
+                    // location.reload(true);
+                }
+
+                function removeanswer(value) {
+                    if (value > -1) {
+                        arrAnswer.splice(arrAnswer.indexOf(value), 1);
+                    }
+                    $('.answer' + value).hide('slow', function() {
+                        $(this).remove();
+                    });
                 }
 
                 function getAnswer() {
@@ -177,7 +295,7 @@
                     $('#editQuestion').remove();
                     $('.question').show('slow');
                     $('.question').after(
-                        '<br><button type="button" id="lockQuestion" onclick="getAnswer()" da class="btn btn-primary mt20">Lock <i class="fa fa-lock"></i></button>'
+                        '<button type="button" id="lockQuestion" onclick="getAnswer()" da class="btn btn-primary mt20">Lock <i class="fa fa-lock"></i></button>'
                     );
                 }
 
@@ -187,15 +305,14 @@
 
                     let i = Math.floor(Math.random() * 10000);
                     $('#addAnswer').before(`
-    <br><div class="answer` + i + ` mt20">
-    <label class="radio-label">
-    <input type="radio" class="square-blue" name="correct" value="` + i + `"> <label for="number" class="label-control" style="color: #707070; font-weight: bold;"> Correct Answer </label>
+    <div class="answer` + i + ` mt20">
+    <label class="radio-inline">
+    <input type="radio" class="square-blue" name="correct" value="` + i + `"> <label for="number" class="label-control" style="color: #707070; font-weight: bold;">Correct Answer</label>
     </label>
-    <button type="button" id="removeAnswer" onclick="remove(` + i + `)" da value="` + i +
+    <button type="button" id="removeAnswer" onclick="removeanswer(` + i + `)" da value="` + i +
                         `" class="btn btn-link btn-danger remove` + i + `" style="float:right"><i class="fa fa-trash"></i></button>
     <textarea name="answer` + i + `" id="answer` + i + `" cols="30" rows="10" required></textarea>
     </div>
-    <br>
     `);
 
                     CKEDITOR.replace("answer" + i, {
@@ -207,8 +324,7 @@
                     CKEDITOR.config.height = 60;
                     CKEDITOR.config.toolbarCanCollapse = true;
                     myStyle()
-                    arrAnswer.push(i)
-
+                    arrAnswer.push(i);
 
                 }
 
@@ -218,14 +334,6 @@
                     increaseArea: '10%' // optional
                 });
 
-
-                function remove(value) {
-                    if (value > -1) {
-                        arrAnswer.splice(arrAnswer.indexOf(value), 1);
-                    }
-                    $('.answer' + value).remove();
-
-                }
 
                 function submitForm() {
                     if ($('.alertquestion')) {
@@ -288,8 +396,10 @@
                     }
                 }
 
-                jQuery(document).ready(function($) {
 
+
+                jQuery(document).ready(function($) {
+                    eachanswer()
                     myFunc()
                     defineFirstAnswerAndHide()
                     myStyle()

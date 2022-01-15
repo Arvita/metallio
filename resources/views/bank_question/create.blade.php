@@ -8,7 +8,7 @@
                 <span class="fw-mediumbold">
                     {{ isset($bank_question) ? 'Edit' : 'Create' }}</span>
                 <span class="fw-light">
-                    User
+                    Bank Question
                 </span>
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">

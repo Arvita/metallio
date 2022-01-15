@@ -65,8 +65,8 @@
                                     Add Question
                                 </a>
                                 <button
-                                    data-url="{{ url('detail_bank_question/confirm/select_delete/' . $bank_question->id) }}"
-                                    class="ajax_modal btn btn-primary btn-round ">
+                                    data-url="{{ url('detail_bank_question/confirm_delete/deleteall/' . $bank_question->id) }}"
+                                    class="ajax_modal_popup btn btn-primary btn-round ">
                                     <i class="fa fa-trash-o"></i>
                                     Delete All
                                 </button>
@@ -105,12 +105,12 @@
                 a.ui-button:active,
                 .ui-button:active,
                 .ui-button.ui-state-active:hover {
-                    border-top-color: #e6674a;
-                    border-right-color: #e6674a;
-                    border-bottom-color: #e6674a;
-                    border-left-color: #e6674a;
+                    border-top-color: #2A2F5B;
+                    border-right-color: #2A2F5B;
+                    border-bottom-color: #2A2F5B;
+                    border-left-color: #2A2F5B;
                     background-image: initial;
-                    background-color: #e35434;
+                    background-color: #2A2F5B;
                     color: rgb(232, 230, 227);
                 }
 
@@ -137,26 +137,25 @@
                     }
                 });
 
-                function getAnswer(type, id) {
+                function getAnswer(id) {
                     if ($('#answer' + id)) {
                         $('#answer' + id).hide('400', function() {
                             $(this).remove();
                         });
                     }
                     if (!$('#answer' + id).length) {
-                        if (type == '1' || type == '3' || type == '2') {
                             $.ajax({
                                 url: `{{ url('detail_bank_question/getanswer/`+  id +`') }}`,
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function(data) {
                                     $('#question' + id).append('<ul id="answer' + id +
-                                        '" class="list-group list-group-flush mt20"></ul>');
+                                        '" class="list-group mt20"></ul>');
                                     $.each(data, function(index, val) {
                                         if (val.status == '1') {
                                             $('#answer' + id).append(
-                                                '<li class="list-group-item"><i class="fa fa-check mb20" style="color:green; float: right;"></i>' +
-                                                val.answer + '</li>');
+                                                '<li class="list-group-item">' +
+                                                val.answer + '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>');
                                         } else {
                                             $('#answer' + id).append('<li class="list-group-item">' + val
                                                 .answer + '</li>');
@@ -164,8 +163,6 @@
                                     });
                                 }
                             })
-
-                        }
                     }
                 }
 
@@ -195,33 +192,13 @@
                                     let typeQuestion = 'multiple choice';
 
                                     return `
-                                        <h3>Soal Ke ` + (meta.row + meta.settings._iDisplayStart + 1) + ` - ` + data
-                                        .category +
+                                        <h3>Soal Ke ` + (meta.row + meta.settings._iDisplayStart + 1) +
                                         ` <span style="float:right;">` + typeQuestion + `  </span></h3>
                                         <div id="question` + data.id + `">
-                                        <table style="color: #707070; width: 50%; font-size:12px;" class="table table-sm table-hover mb20">
-                                        <tr>
-                                        <th style="width: 25%;">Detail Skema</th>
-                                        <td>` + data.detailscheme + `</td>
-                                        </tr>
-                                        <tr>
-                                        <th style="width: 25%;">No KUK</th>
-                                        <td>` + data.no_kuk + `</td>
-                                        </tr>
-                                        <tr>
-                                        <th style="width: 25%;">Elemen</th>
-                                        <th>` + data.element + `</th>
-                                        </tr>
-                                        <tr>
-                                        <th style="width: 25%;">Kategori</th>
-                                        <td>` + data.category + `</td>
-                                        </tr>
-                                        </table>
                                         <div class="question mt20" style="word-break: break-word;">
-                                        <p style="color: #707070; text-align:center;"><i>Soal</i></p>
-
-                                        ` + data.question + `<button type="button" onclick="getAnswer(` + data.tipe +
-                                        `,` + data.id + `);" class="btn-xs btn-orange">Lihat Jawaban</button>
+                                        <p style="color: #707070; text-align:center;"><i>Question</i></p>
+                                        <div class="col-sm-12"> 
+                                        ` +data.question+ `</div><br><div class="col-sm-12"><button type="button" onclick="getAnswer('` + data.id + `')" class="btn-xs btn-primary btn-round">Look Answer</button></div><br>
                                         </div>
                                         <div>
                                         `;
@@ -237,16 +214,6 @@
                                 "bVisible": true,
                                 "bSearchable": true
                             },
-                            {
-                                "mData": "question",
-                                "bVisible": false,
-                                "bSearchable": true
-                            },
-                            {
-                                "mData": "category",
-                                "bVisible": false,
-                                "bSearchable": true
-                            }
 
                         ],
 

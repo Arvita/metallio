@@ -8,7 +8,7 @@
                 <span class="fw-mediumbold">
                     {{ isset($category) ? 'Edit' : 'Create' }}</span>
                 <span class="fw-light">
-                    User
+                    Category
                 </span>
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">

@@ -8,14 +8,13 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
-class UserController extends Controller
+class FileController extends Controller
 {
     private $guard = [0];
 
     public function __construct()
     {
         $this->middleware(function (Request $request, $next) {
-
             if (!in_array(\Auth::user()->role, $this->guard)) {
                 return redirect('/login');
             }
@@ -24,38 +23,35 @@ class UserController extends Controller
     }
 
     public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
 
-	{
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
 
-		if($request->hasFile('upload')) {
+            $extension = $request->file('upload')->getClientOriginalExtension();
 
-			$originName = $request->file('upload')->getClientOriginalName();
-
-			$fileName = pathinfo($originName, PATHINFO_FILENAME);
-
-			$extension = $request->file('upload')->getClientOriginalExtension();
-
-			$fileName = $fileName.'_'.time().'.'.$extension;
+            $fileName = $fileName.'_'.time().'.'.$extension;
 
 
 
-			$request->file('upload')->move(public_path().'upload/',$fileName);
+            $request->file('upload')->move(public_path().'upload/', $fileName);
 
 
 
-			$CKEditorFuncNum = $request->input('CKEditorFuncNum');
+            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
 
-			$url = asset('upload/'.$fileName);
+            $url = asset('upload/'.$fileName);
 
-			$msg = 'Image uploaded successfully';
+            $msg = 'Image uploaded successfully';
 
-			$response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
+            $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
 
 
 
-			@header('Content-type: text/html; charset=utf-8');
+            @header('Content-type: text/html; charset=utf-8');
 
-			echo $response;
-
-		}
+            echo $response;
+        }
+    }
 }

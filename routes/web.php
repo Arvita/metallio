@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankQuestionController;
+use App\Http\Controllers\DetailBankQuestionController;
 use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -49,9 +50,15 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::get('detail_bank_question/{kode}/detail', [App\Http\Controllers\DetailBankQuestionController::class, 'index']);    
     Route::get('detail_bank_question/getallquestion/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'getAllQuestion']);
     Route::get('/detail_bank_question/create/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'create']);
-    Route::get('/detail_bank_question/edit_question/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'edit_question']);
+    Route::get('/detail_bank_question/edit/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'edit']);
     Route::get('/detail_bank_question/confirm_delete/{type}/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'delete_confirm']);
-    Route::resource('detail_bank_question', DetailBankQuestionController::class);
+    Route::post('/detail_bank_question/question_submit/', [App\Http\Controllers\DetailBankQuestionController::class, 'store']);
+    Route::post('/detail_bank_question/question_update/', [App\Http\Controllers\DetailBankQuestionController::class, 'update']);
+    Route::get('/detail_bank_question/getanswer/{id}', [App\Http\Controllers\DetailBankQuestionController::class, 'getAnswer']);
+    Route::post('/detail_bank_question/deleteanswer', [App\Http\Controllers\DetailBankQuestionController::class, 'deleteanswer']);
+    Route::get('/detail_bank_question/getdetailquestionbank/{id}/', [App\Http\Controllers\DetailBankQuestionController::class, 'getdetailquestionbank']);
+    Route::post('/detail_bank_question/delete/', [App\Http\Controllers\DetailBankQuestionController::class, 'delete']);
+    // Route::resource('detail_bank_question', DetailBankQuestionController::class);
 
     Route::post('/file/upload', [App\Http\Controllers\FileController::class, 'upload'])->name('file.upload');
 });

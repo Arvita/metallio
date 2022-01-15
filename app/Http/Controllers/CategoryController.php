@@ -50,7 +50,7 @@ class CategoryController extends Controller
             $category->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('insert.success')]);
         }
-        return redirect('/dashboard');
+        return redirect('/home');
     }
 
     public function data()
@@ -89,7 +89,7 @@ class CategoryController extends Controller
             $category->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('update.success')]);
         }
-        return redirect('/dashboard');
+        return redirect('/home');
     }
 
     public function confirm($id)

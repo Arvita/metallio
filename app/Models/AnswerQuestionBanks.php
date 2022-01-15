@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class AnswerQuestion extends Model
+class AnswerQuestionBanks extends Model
 {
     use HasFactory;
     protected $primaryKey = 'id';
