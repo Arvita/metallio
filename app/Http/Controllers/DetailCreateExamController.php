@@ -136,7 +136,6 @@ class DetailCreateExamController extends Controller
             }
             $i++;
         }       
-        dd($data);
         foreach ($data as $key => $value) {
             $field = [
         'id_detail_bank_question' => $value['id'],
