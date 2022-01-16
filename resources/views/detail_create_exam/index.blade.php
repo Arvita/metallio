@@ -52,6 +52,10 @@
                                                 <th style="width: 25%;">Total Question</th>
                                                 <th>{{ $countQuestion }}</th>
                                             </tr>
+                                            <tr>
+                                                <th style="width: 25%;">Total Score</th>
+                                                <th>{{ $sumScore->score }}</th>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
@@ -78,6 +82,7 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center">Detail</th>
+                                            <th class="text-center">Score</th>
                                             <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
@@ -157,7 +162,7 @@
                                             '<li class="list-group-item">' +
                                             val.answer +
                                             '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>'
-                                            );
+                                        );
                                     } else {
                                         $('#answer' + id).append('<li class="list-group-item">' + val
                                             .answer + '</li>');
@@ -222,6 +227,12 @@
                                 "sClass": "accordion",
                                 "bSortable": false,
                                 "bSearchable": false
+                            },
+                            {
+                                "mData": "score",
+                                "bVisible": true,
+                                'sClass': "text-center",
+                                "bSearchable": true
                             },
                             {
                                 "mData": "detail",

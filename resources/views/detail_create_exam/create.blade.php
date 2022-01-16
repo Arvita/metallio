@@ -176,7 +176,7 @@
                 }
                 if (parseInt($('#totalQuestionExam').val(), 10) > 0 && parseInt($('#totalQuestionExam').val(), 10) <= data) {
 
-                    $('.inputDetailCategory').append(`
+                    $('.inputDetailCategory').html(`
 				<button onclick="submitdata()" class="btn-xs btn-primary btn-round  mt20 submit  col-sm-5">Save</i></button>
 				<div class="notif col-sm-5"></div>
 				`);
@@ -190,6 +190,7 @@
 				<thead>
 				<tr>
 				<th class="text-center">Detail</th>
+                <th class="text-center">Score</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -206,19 +207,19 @@
 
                             // ===============CREATE DATATABLES================
 
-                            masterscheme = $('#list_question').dataTable({
+                            detail_bank_question = $('#list_question').DataTable({
                                 "drawCallback": function() {
+                                    $(".trackInput").on("change", function() {
+                                        var $row = $(this).parents("tr");
+                                        var rowData = detail_bank_question.row($row).data();
+                                        rowData.score = $(this).val();
+                                    });
                                     $('.accordion').accordion({
                                         active: false,
                                         collapsible: true,
                                         heightStyle: 'panel',
                                         clearStyle: true,
                                         autoHeight: false,
-                                    });
-                                    $('.square-orange').iCheck({
-                                        checkboxClass: 'icheckbox_square-orange',
-                                        radioClass: 'iradio_square-orange',
-                                        increaseArea: '10%' // optional
                                     });
                                 },
                                 data: response2,
@@ -240,17 +241,28 @@
                                         </div>
                                         <div>
                                         `;
-                                        
+                                        },
+                                        "sWidth": "90%",
+                                        "sClass": "accordion",
+                                        "bSortable": false,
+                                        "bSearchable": false
+                                    },
+                                    {
+                                        "targets": -1,
+                                        "data": "score",
+                                        "defaultContent": `<input class="form-control trackInput" type="text" value="0">`
+                                    }
 
-                                    }, "sWidth": "90%", "sClass": "accordion", "bSortable": false, "bSearchable": false}
-					],
+                                ],
 
                             });
+                            
+                            
                             $('div.dataTables_filter input').unbind().bind('keyup', function(e) {
                                 if (e.keyCode == 13) {
-                                    masterscheme.fnFilter(this.value);
+                                    detail_bank_question.fnFilter(this.value);
                                 } else {
-                                    if (this.value.length == 0) masterscheme.fnFilter('');
+                                    if (this.value.length == 0) detail_bank_question.fnFilter('');
                                 }
                             });
                         }
@@ -259,35 +271,36 @@
             }
 
             function getAnswer(id) {
-                    if ($('#answer' + id)) {
-                        $('#answer' + id).hide('400', function() {
-                            $(this).remove();
-                        });
-                    }
-                    if (!$('#answer' + id).length) {
-                        $.ajax({
-                            url: `{{ url('detail_create_exam/getanswer/`+  id +`') }}`,
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function(data) {
-                                $('#question' + id).append('<ul id="answer' + id +
-                                    '" class="list-group mt20"></ul>');
-                                $.each(data, function(index, val) {
-                                    if (val.status == '1') {
-                                        $('#answer' + id).append(
-                                            '<li class="list-group-item">' +
-                                            val.answer +
-                                            '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>'
-                                            );
-                                    } else {
-                                        $('#answer' + id).append('<li class="list-group-item">' + val
-                                            .answer + '</li>');
-                                    }
-                                });
-                            }
-                        })
-                    }
+                if ($('#answer' + id)) {
+                    $('#answer' + id).hide('400', function() {
+                        $(this).remove();
+                    });
                 }
+                if (!$('#answer' + id).length) {
+                    $.ajax({
+                        url: `{{ url('detail_create_exam/getanswer/`+  id +`') }}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#question' + id).append('<ul id="answer' + id +
+                                '" class="list-group mt20"></ul>');
+                            $.each(data, function(index, val) {
+                                if (val.status == '1') {
+                                    $('#answer' + id).append(
+                                        '<li class="list-group-item">' +
+                                        val.answer +
+                                        '<i class="fa fa-check mb20" style="color:green; padding-left:10px"></i></li>'
+                                    );
+                                } else {
+                                    $('#answer' + id).append('<li class="list-group-item">' + val
+                                        .answer + '</li>');
+                                }
+                            });
+                        }
+                    })
+                }
+            }
+
 
             function submitdata() {
                 $('.notif').append(
@@ -295,15 +308,14 @@
                 );
                 setTimeout(function() {
                     $.ajax({
-                        url: `{{ url('/create_exam/submit') }}`,
+                        url: `{{ url('/detail_create_exam/submit') }}`,
                         type: 'POST',
                         dataType: 'json',
                         data: {
                             _token: "{{ csrf_token() }}",
                             data_question: dataQuestion,
                             id_exam: "{{ $exam->id }}",
-                            id_bank: "{{ $bank_question->id }}",
-                            type: $('#questionType').val()
+                            id_bank: "{{ $bank_question->id }}"
                         },
                         success: function(data) {
                             if (data.stat) {
@@ -313,7 +325,7 @@
                                 $('.notif').append(msg);
                                 window.setTimeout(function() {
                                     window.location.href =
-                                        `{{ url('/create_exam/detail/' . Crypt::encrypt($exam->id) . '/') }}`;
+                                        `{{ url('/detail_create_exam/' . $exam->id . '/detail') }}`;
                                 }, 500);
                             } else {
                                 msg =
@@ -334,40 +346,15 @@
                 // tables();
                 //============= type change =========
 
-                $('#totalQuestionExam').on('keyup', function() {
-                    if ($('.inputDetailCategory')) {
-                        $('.inputDetailCategory').hide('400', function() {
-                            $(this).remove();
-                        });
-                    }
-                    const maxVal = parseInt($(this).attr('max'));
-                    if ($(this).val() > maxVal) {
-                        $(this).val(maxVal);
-                    } else if ($(this).val() < 0) {
-                        $(this).val(0);
-                    }
-                });
-
-                $('#totalQuestionExam').on('change', function() {
-                    if ($('.inputDetailCategory')) {
-                        $('.inputDetailCategory').hide('400', function() {
-                            $(this).remove();
-                        });
-                    }
-                });
-
-
-
-                $('#categoryButton').on('dblclick', function(e) {
-                    // e.preventDefault();
-                    // e.stopPropagation();
-                    // alert('')
-                });
-
                 $('#formCreateExam').on('submit', function(e) {
                     e.preventDefault();
                 });
                 $('#formGenerate').on('submit', function(e) {
+                    if ($('.inputDetailCategory')) {
+                        $('.inputDetailCategory').hide('400', function() {
+                            $(this).remove();
+                        });
+                    }
                     e.preventDefault();
                 });
                 jQuery('#formCreateExam').validate({

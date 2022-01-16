@@ -72,6 +72,11 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::get('/detail_create_exam/create/{id}/{kode}', [App\Http\Controllers\DetailCreateExamController::class, 'create']);
     Route::post('/detail_create_exam/generate/',  [App\Http\Controllers\DetailCreateExamController::class, 'generate']);
     Route::get('/detail_create_exam/getanswer/{id}', [App\Http\Controllers\DetailCreateExamController::class, 'getAnswer']);
+    Route::post('/detail_create_exam/submit/', [App\Http\Controllers\DetailCreateExamController::class, 'submit']);
+    Route::get('/detail_create_exam/confirm_delete/{type}/{id}', [App\Http\Controllers\DetailCreateExamController::class, 'delete_confirm']);
+    Route::post('/detail_create_exam/deleteanswer', [App\Http\Controllers\DetailCreateExamController::class, 'deleteanswer']);
+    Route::get('/detail_create_exam/getdetailquestionbank/{id}/', [App\Http\Controllers\DetailCreateExamController::class, 'getdetailquestionbank']);
+    Route::post('/detail_create_exam/delete/', [App\Http\Controllers\DetailCreateExamController::class, 'delete']);
 
     Route::post('/file/upload', [App\Http\Controllers\FileController::class, 'upload'])->name('file.upload');
 });
