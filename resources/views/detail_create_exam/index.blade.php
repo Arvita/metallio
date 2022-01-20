@@ -45,6 +45,10 @@
                                                 <th>{{ $create_exam->name }}</th>
                                             </tr>
                                             <tr>
+                                                <th style="width: 25%;">Type</th>
+                                                <th>{{ $create_exam->type }}</th>
+                                            </tr>
+                                            <tr>
                                                 <th style="width: 25%;">Duration</th>
                                                 <th>{{ $create_exam->duration }} Minutes</th>
                                             </tr>

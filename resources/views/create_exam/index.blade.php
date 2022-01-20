@@ -44,6 +44,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
+                                            <th>Type</th>
                                             <th>Duration</th>
                                             <th>Update</th>
                                             <th>Question</th>
@@ -106,6 +107,14 @@
                         "bSortable": true,
                         "bSearchable": true
                     },    
+                    {
+                        "mData": "type",
+                        "nama": "tyoe",
+                        "sWidth": "",
+                        "sClass": "",
+                        "bSortable": true,
+                        "bSearchable": true
+                    },
                     {
                         "mData": "duration",
                         "nama": "duration",

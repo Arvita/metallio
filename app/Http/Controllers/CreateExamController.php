@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CreateExam;
 use App\Models\DetailCreateExam;
+use App\Models\Type;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -33,7 +34,8 @@ class CreateExamController extends Controller
     public function create()
     {
         $create_exam = null;
-        return view('create_exam.create', compact('create_exam'));
+        $type = Type::get();
+        return view('create_exam.create', compact('create_exam','type'));
     }
 
     public function store(Request $request)
@@ -41,7 +43,8 @@ class CreateExamController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|min:2',
-                'duration' => 'required'
+                'duration' => 'required',
+                'type' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -51,6 +54,7 @@ class CreateExamController extends Controller
             $create_exam = new CreateExam;
             $create_exam->name = strip_tags($request->input('name'));
             $create_exam->duration = strip_tags($request->input('duration'));
+            $create_exam->id_type = strip_tags($request->input('type'));
             $create_exam->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('insert.success')]);
         }
@@ -59,7 +63,8 @@ class CreateExamController extends Controller
 
     public function data()
     {
-        $data = CreateExam::select('create_exams.name', 'create_exams.updated_at','create_exams.duration', 'create_exams.id', 'create_exams.created_at')
+        $data = CreateExam::select('create_exams.name', 'create_exams.updated_at','create_exams.duration', 'create_exams.id', 'create_exams.created_at','types.name as type')
+        ->join('types','types.id','=','create_exams.id_type')
         ->latest()
         ->get();
         return Datatables::of($data)
@@ -83,7 +88,8 @@ class CreateExamController extends Controller
     public function edit($id)
     {
         $create_exam = CreateExam::find($id);
-        return ($create_exam) ? view('create_exam.create', compact('create_exam', 'id')) : $this->showModalError();
+        $type = Type::get();
+        return ($create_exam) ? view('create_exam.create', compact('create_exam', 'id','type')) : $this->showModalError();
     }
 
 
@@ -92,7 +98,8 @@ class CreateExamController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|min:2',
-                'duration' => 'required'
+                'duration' => 'required',
+                'type' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -102,6 +109,7 @@ class CreateExamController extends Controller
             $create_exam = CreateExam::find($id);
             $create_exam->name = strip_tags($request->input('name'));
             $create_exam->duration = strip_tags($request->input('duration'));
+            $create_exam->id_type = strip_tags($request->input('type'));
             $create_exam->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('update.success')]);
         }

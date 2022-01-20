@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\UsersImport;
-use App\Models\Category;
+use App\Models\Type;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
@@ -36,9 +36,9 @@ class UserController extends Controller
 
     public function create()
     {
-        $category = Category::get();
+        $type = Type::get();
         $manage_user = null;
-        return view('manage_user.create', compact('manage_user','category'));
+        return view('manage_user.create', compact('manage_user','type'));
     }
 
     public function store(Request $request)
@@ -50,7 +50,7 @@ class UserController extends Controller
                 'password' => 'min:8|required_with:password_again|same:password_again',
                 'password_again' => 'min:8',
                 'role' => 'required',
-                'category' => 'required'
+                'type' => 'required'
             ]);
 
             if ($validator->fails()) return response()->json(['stat' => false, 'msg' => $this->getMessage('insert.failed')]);
@@ -59,7 +59,7 @@ class UserController extends Controller
             $user->name = strip_tags($request->input('name'));
             $user->email = strip_tags($request->input('email'));
             $user->role = strip_tags($request->input('role'));
-            $user->id_category = strip_tags($request->input('category'));
+            $user->id_type = strip_tags($request->input('type'));
             $user->password = bcrypt($request->input('password'));
             $user->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('insert.success')]);
@@ -69,8 +69,8 @@ class UserController extends Controller
 
     public function data()
     {
-        $data = User::select('users.name','users.email','users.created_at','users.updated_at','categories.name as category','users.role','users.id')
-        ->join('categories','categories.id','=','users.id_category')
+        $data = User::select('users.name','users.email','users.created_at','users.updated_at','types.name as type','users.role','users.id')
+        ->join('types','types.id','=','users.id_type')
         ->latest()
         ->get();
         return Datatables::of($data)
@@ -85,9 +85,9 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $category = Category::get();
+        $type = Type::get();
         $manage_user = User::find($id);
-        return ($manage_user) ? view('manage_user.create', compact('manage_user', 'id','category')) : $this->showModalError();
+        return ($manage_user) ? view('manage_user.create', compact('manage_user', 'id','type')) : $this->showModalError();
     }
 
 
@@ -98,7 +98,7 @@ class UserController extends Controller
                 'name' => 'required|min:2',
                 'email' => 'required|max:255|email|',
                 'role' => 'required',
-                'category' => 'required',
+                'type' => 'required',
             ]);
 
             if ($validator->fails()) return response()->json(['stat' => false, 'msg' => $validator->errors()]);
@@ -111,7 +111,7 @@ class UserController extends Controller
             $user->name = strip_tags($request->input('name'));
             $user->email = strip_tags($request->input('email'));
             $user->role = strip_tags($request->input('role'));
-            $user->id_category = strip_tags($request->input('category'));
+            $user->id_type = strip_tags($request->input('type'));
             $user->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('update.success')]);
         }

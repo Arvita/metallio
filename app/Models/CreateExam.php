@@ -16,6 +16,7 @@ class CreateExam extends Model
     protected $fillable = [
         'name',
         'duration',
+        'id_type'
     ];
     protected static function boot(){
         parent::boot();

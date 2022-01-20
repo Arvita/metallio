@@ -27,6 +27,19 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group form-group-default">
+                        <label>Type</label>
+                        <select name="type" class="form-control" id="type">
+                            @foreach ($type as $item)
+                            <option value="{{ $item->id }}"
+                                {{ isset($create_exam) && $create_exam->id_type == $item->id ? 'selected' : '' }}>
+                                {{ $item->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-group-default">
                         <label>Duration</label>
                         <input id="duration" type="text" class="form-control" placeholder="fill duration" name="duration"
                             value="{{ isset($create_exam) ? $create_exam->duration : '' }}"> Minutes
@@ -60,7 +73,10 @@
                 minlength: 2,
                 required: true
             },
-            name: {
+            type: {
+                required: true
+            },
+            duration: {
                 required: true
             }
         },

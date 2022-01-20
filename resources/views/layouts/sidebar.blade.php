@@ -45,9 +45,9 @@ $level = Auth::user()->role; ?>
                         <p>Dashboard</p>
                     </a>
                 </li>
-                @if (in_array($level, [1]))
-                <li class="nav-item">
-                    <a href="#">
+                @if (in_array($level, [1,0]))
+                <li class="nav-item {{ isset($m_exam) ? $m_exam : '' }}">
+                    <a href="{{ url('exam') }}">
                         <i class="fas fa-home"></i>
                         <p>Exam</p>
                     </a>
@@ -72,6 +72,12 @@ $level = Auth::user()->role; ?>
                         <p>Exam</p>
                     </a>
                 </li>
+                <li class="nav-item {{ isset($m_schedule) ? $m_schedule : '' }}">
+                    <a href="{{ url('schedule') }}">
+                        <i class="far fa-file-excel"></i>
+                        <p>Schedule</p>
+                    </a>
+                </li>
                 @endif
                 @if (in_array($level, [0]))
                 <li class="nav-section">
@@ -91,6 +97,12 @@ $level = Auth::user()->role; ?>
                     <a href="{{ url('category') }}">
                         <i class="far fa-user"></i>
                         <p>Category</p>
+                    </a>
+                </li>
+                <li class="nav-item {{ isset($m_type) ? $m_type : '' }}">
+                    <a href="{{ url('type') }}">
+                        <i class="far fa-user"></i>
+                        <p>Type</p>
                     </a>
                 </li>
                 @endif

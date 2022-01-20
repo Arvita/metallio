@@ -73,11 +73,11 @@
                 </div>
                 <div class="col-sm-12">
                     <div class="form-group form-group-default">
-                        <label>Category</label>
-                        <select name="category" class="form-control" id="category">
-                            @foreach ($category as $item)
+                        <label>Type</label>
+                        <select name="type" class="form-control" id="type">
+                            @foreach ($type as $item)
                             <option value="{{ $item->id }}"
-                                {{ isset($manage_user) && $manage_user->id_category == $item->id ? 'selected' : '' }}>
+                                {{ isset($manage_user) && $manage_user->id_type == $item->id ? 'selected' : '' }}>
                                 {{ $item->name }}
                             </option>
                             @endforeach
@@ -122,7 +122,7 @@
             role: {
                 required: true
             },
-            category: {
+            type: {
                 required: true
             },
             password_again: {

@@ -4,6 +4,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankQuestionController;
 use App\Http\Controllers\CreateExamController;
+use App\Http\Controllers\TypeController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\DetailBankQuestionController;
 use App\Http\Controllers\DetailCreateExamController;
 use App\Imports\UsersImport;
@@ -44,6 +47,10 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::post('category/data', [App\Http\Controllers\CategoryController::class, 'data']);
 	Route::get('category/{kode}/conf', [App\Http\Controllers\CategoryController::class, 'confirm']);
     Route::resource('category', CategoryController::class);
+
+    Route::post('type/data', [App\Http\Controllers\TypeController::class, 'data']);
+	Route::get('type/{kode}/conf', [App\Http\Controllers\TypeController::class, 'confirm']);
+    Route::resource('type', TypeController::class);
     
     Route::post('bank_question/data', [App\Http\Controllers\BankQuestionController::class, 'data']);
 	Route::get('bank_question/{kode}/conf', [App\Http\Controllers\BankQuestionController::class, 'confirm']);
@@ -77,6 +84,23 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::post('/detail_create_exam/deleteanswer', [App\Http\Controllers\DetailCreateExamController::class, 'deleteanswer']);
     Route::get('/detail_create_exam/getdetailquestionbank/{id}/', [App\Http\Controllers\DetailCreateExamController::class, 'getdetailquestionbank']);
     Route::post('/detail_create_exam/delete/', [App\Http\Controllers\DetailCreateExamController::class, 'delete']);
+
+    Route::post('schedule/data', [App\Http\Controllers\ScheduleController::class, 'data']);
+	Route::get('schedule/{kode}/conf', [App\Http\Controllers\ScheduleController::class, 'confirm']);
+    Route::post('/schedule/create/', [App\Http\Controllers\ScheduleController::class, 'create']);
+    Route::get('/schedule/getexam/{id}', [App\Http\Controllers\ScheduleController::class, 'get_exam']);
+    Route::post('/schedule/create_schedule/', [App\Http\Controllers\ScheduleController::class, 'store']);
+    Route::get('/schedule/schedule/{id}', [App\Http\Controllers\ScheduleController::class, 'schedule']);
+    Route::post('/schedule/update/', [App\Http\Controllers\ScheduleController::class, 'update']);
+    Route::resource('/schedule', ScheduleController::class);
+
+    Route::post('/exam/exam', [App\Http\Controllers\ExamController::class, 'take_exam']);
+    Route::post('/exam/getquestion', [App\Http\Controllers\ExamController::class, 'getquestion']);
+    Route::post('/exam/submit_answer', [App\Http\Controllers\ExamController::class, 'submit_answer']);
+    Route::post('/exam/completed/', [App\Http\Controllers\ExamController::class, 'completed']);
+    Route::post('exam/data', [App\Http\Controllers\ExamController::class, 'data']);
+    Route::get('exam/{kode}/conf', [App\Http\Controllers\ExamController::class, 'confirm']);
+    Route::resource('/exam', ExamController::class);
 
     Route::post('/file/upload', [App\Http\Controllers\FileController::class, 'upload'])->name('file.upload');
 });

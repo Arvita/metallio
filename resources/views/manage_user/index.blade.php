@@ -53,7 +53,7 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Role</th>
-                                            <th>Category</th>
+                                            <th>Type</th>
                                             <th>Update</th>
                                             <th style="width: 10%">Action</th>
                                         </tr>
@@ -131,8 +131,8 @@
                         "bSearchable": false
                     },
                     {
-                        "mData": "category",
-                        "name": "category",
+                        "mData": "type",
+                        "name": "type",
                         "sWidth": "",
                         "sClass": "text-center",
                         "bSortable": false,

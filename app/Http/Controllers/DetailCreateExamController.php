@@ -31,7 +31,9 @@ class DetailCreateExamController extends Controller
     {
         $m_create_exam = 'active';
         $detail_create_exam = DetailCreateExam::get();
-        $create_exam = CreateExam::find($id);
+        $create_exam = CreateExam::select('create_exams.name','create_exams.id','create_exams.duration','types.name as type')
+        ->join('types', 'types.id', '=', 'create_exams.id_type')
+        ->where('create_exams.id', $id)->first();
         $countQuestion = DetailCreateExam::where('id_create_exam', $id)->count();
         $sumScore =DetailCreateExam::select(
             \DB::raw('sum(score) as score')
