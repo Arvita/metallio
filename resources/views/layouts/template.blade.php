@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{{ config('app.name', 'Laravel') }}</title>
     <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-    <link rel="icon" href="{{ asset('/assets/img/icon.ico') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('/assets/img/logo.ico') }}" type="image/x-icon" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-	@stack('content-css')
+    @stack('content-css')
     <!-- Fonts and icons -->
     <script src="{{ asset('/assets/js/plugin/webfont/webfont.min.js') }}"></script>
     <script>
@@ -30,9 +30,9 @@
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('/assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/css/atlantis.css') }}">
-    
-	<link rel="stylesheet" href="{{ asset('/assets/js/plugin/bootstrap-modal/css/bootstrap-modal-bs3patch.css') }}"/>
-	<link rel="stylesheet" href="{{ asset('/assets/js/plugin/bootstrap-modal/css/bootstrap-modal.css') }}" />
+
+    <link rel="stylesheet" href="{{ asset('/assets/js/plugin/bootstrap-modal/css/bootstrap-modal-bs3patch.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/js/plugin/bootstrap-modal/css/bootstrap-modal.css') }}" />
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}">
 </head>
@@ -41,10 +41,18 @@
     <div class="wrapper fullheight-side no-box-shadow-style">
         <!-- Logo Header -->
         <div class="logo-header position-fixed" data-background-color="dark">
-
-            <a href="index.html" class="logo">
-                <img src="{{ asset('/assets/img/logo.svg') }}" alt="navbar brand" class="navbar-brand">
+            @if ( Auth::user()->role ==0 )
+            <a href="{{ url('home') }}" class="logo">
+                <img src="{{ asset('/assets/img/logo1.svg') }}" alt="navbar brand" class="navbar-brand">
             </a>
+            @else
+            <a href="{{ url('exam') }}" class="logo">
+                <img src="{{ asset('/assets/img/logo1.svg') }}" alt="navbar brand" class="navbar-brand">
+            </a>
+                
+            @endif
+
+            
             <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse"
                 data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
@@ -68,11 +76,11 @@
 
             <div class="container-fluid">
                 <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
-                    
+
                     <li class="nav-item dropdown hidden-caret">
                         <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
                             <div class="avatar-sm">
-                                <img src="{{ asset('/assets/img/profile.jpg') }}" alt="..."
+                                <img src="{{ asset('/assets/img/picture.png') }}" alt="..."
                                     class="avatar-img rounded-circle">
                             </div>
                         </a>
@@ -80,20 +88,16 @@
                             <div class="dropdown-user-scroll scrollbar-outer">
                                 <li>
                                     <div class="user-box">
-                                        <div class="avatar-lg"><img src="{{ asset('/assets/img/profile.jpg') }}"
+                                        <div class="avatar-lg"><img src="{{ asset('/assets/img/picture.png') }}"
                                                 alt="image profile" class="avatar-img rounded"></div>
                                         <div class="u-text">
                                             <h4>{{ Auth::user()->name }}</h4>
-                                            <p class="text-muted">{{ Auth::user()->email }}</p><a href="profile.html"
-                                                class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                                            <p class="text-muted">{{ Auth::user()->email }}</p>
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="dropdown-divider"></div>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ url('detail_profile') }}">Account Setting <i
-                                            class="icon-settings float-right"></i></a>
                                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); 
             document.getElementById('logout-form').submit();">Logout <i class="icon-logout float-right"></i></a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST"
@@ -110,10 +114,10 @@
         <!-- End Navbar -->
 
         <div class="main-panel full-height">
-			@yield('content')		
+            @yield('content')
             <footer class="footer">
                 <div class="container-fluid">
-                    
+
                     <?php echo date('Y'); ?>, made with <i class="fa fa-heart heart text-danger"></i> by <a
                         href="http://arvitaagusk.com/" target="_blank"> ApikaCoding </a>
                 </div>
@@ -130,8 +134,8 @@
                             role="tab" aria-selected="true">Messages</a> </li>
                     <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tasks" role="tab"
                             aria-selected="false">Tasks</a> </li>
-                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings"
-                            role="tab" aria-selected="false">Settings</a> </li>
+                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab"
+                            aria-selected="false">Settings</a> </li>
                 </ul>
                 <div class="tab-content mt-3">
                     <div class="tab-chat tab-pane fade show active" id="messages" role="tabpanel">
@@ -571,7 +575,7 @@
     <script src="{{ asset('/assets/js/plugin/moment/moment.min.js') }}"></script>
 
     <!-- Chart JS -->
-    <script src="{{ asset('/assets/js/plugin/chart.js/chart.min.js')}}"></script>
+    <script src="{{ asset('/assets/js/plugin/chart.js/chart.min.js') }}"></script>
 
     <!-- jQuery Sparkline -->
     <script src="{{ asset('/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
@@ -634,17 +638,17 @@
     <!-- Atlantis DEMO methods, don't include it in your project! -->
     <script src="{{ asset('/assets/js/plugin/jquery.validate/jquery.form.js') }}"></script>
 
-	<script src="{{ asset('/assets/js/plugin/bootstrap-modal/js/bootstrap-modal.js') }}"></script>
-	<script src="{{ asset('/assets/js/plugin/bootstrap-modal/js/bootstrap-modalmanager.js') }}"></script>
+    <script src="{{ asset('/assets/js/plugin/bootstrap-modal/js/bootstrap-modal.js') }}"></script>
+    <script src="{{ asset('/assets/js/plugin/bootstrap-modal/js/bootstrap-modalmanager.js') }}"></script>
 
-	<script src="{{ asset('/assets/js/modal.js') }}"></script>
+    <script src="{{ asset('/assets/js/modal.js') }}"></script>
 
-	<!-- Datatables -->
-	<script src="{{ asset('/assets/js/plugin/datatables/datatables.min.js')}}"></script>
+    <!-- Datatables -->
+    <script src="{{ asset('/assets/js/plugin/datatables/datatables.min.js') }}"></script>
 
-	<script src="{{ asset('/assets/js/block.js') }}"></script>
-	<script src="{{ asset('/assets/js/plugin/blockUI/jquery.blockUI.js')}}"></script>
-	<script src="{{ asset('/assets/js/fnReloadAjax.js') }}"></script>
+    <script src="{{ asset('/assets/js/block.js') }}"></script>
+    <script src="{{ asset('/assets/js/plugin/blockUI/jquery.blockUI.js') }}"></script>
+    <script src="{{ asset('/assets/js/fnReloadAjax.js') }}"></script>
 
 
     @stack('content-js')

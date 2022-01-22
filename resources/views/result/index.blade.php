@@ -4,7 +4,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h4 class="page-title">Manage User</h4>
+                <h4 class="page-title">Exam</h4>
                 <ul class="breadcrumbs">
                     <li class="nav-home">
                         <a href="{{ url('home') }}">
@@ -15,13 +15,13 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Setting</a>
+                        <a href="#">Quiz Setting</a>
                     </li>
                     <li class="separator">
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Management User</a>
+                        <a href="#">Result</a>
                     </li>
                 </ul>
             </div>
@@ -30,32 +30,46 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex align-items-center">
-                                <form action="{{ url('manage_user/import') }}" method="post" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="input-group mb-3">
-                                        <input type="file" name="file" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" required>
-                                        <button class="btn btn-primary  ml-auto" type="submit" id="button-addon2"><i class="far fa-file-excel"></i>  Import</button>
-                                    </div>
-                                </form>
-                                <button data-url="{{ route('manage_user.create') }}"
-                                    class="ajax_modal btn btn-primary btn-round ml-auto">
-                                    <i class="fa fa-plus"></i>
-                                    Add New
-                                </button>
+                                <div>SAINTEK</div>
+                                <a href="{{ url('result/saintek_pdf') }}" class="btn btn-primary btn-round ml-auto" target="_blank">
+                                    <i class="far fa-file-pdf"></i>  Export
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="manage_user" class="display table table-striped table-hover">
+                                <table id="result_saintek" class="display table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Type</th>
-                                            <th>Update</th>
-                                            <th style="width: 10%">Action</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <div>SOSHUM</div>
+                                <a href="{{ url('result/soshum_pdf') }}" class="btn btn-primary btn-round ml-auto" target="_blank">
+                                    <i class="far fa-file-pdf"></i>
+                                    Export
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="result_soshum" class="display table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Score</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -79,7 +93,7 @@
 @endpush
 @push('content-js')
     <script type="text/javascript">
-        var manage_user;
+        var result_saintek;
         var ajaxModal = $('#ajax-modal');
         var ajaxModalPopup = $('#ajax-modal-popup');
         var ajaxModalElement = $('#ajax-modal-element');
@@ -90,11 +104,11 @@
         });
 
         $(document).ready(function() {
-            manage_user = $('#manage_user').dataTable({
+            result_saintek = $('#result_saintek').dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": '{{ url('manage_user/data') }}',
+                    "url": '{{ url('result/data_saintek') }}',
                     "type": "POST"
                 },
                 "aoColumns": [{
@@ -115,69 +129,66 @@
                         "bSearchable": true
                     },
                     {
-                        "mData": "email",
-                        "name": "email",
+                        "mData": "score",
+                        "nama": "score",
+                        "sWidth": "",
+                        "sClass": "",
+                        "bSortable": true,
+                        "bSearchable": true
+                    }
+                ],
+            });
+
+            $('div.dataTables_filter input').unbind().bind('keyup', function(e) {
+                if (e.keyCode == 13) {
+                    result_saintek.fnFilter(this.value);
+                } else {
+                    if (this.value.length == 0) result_saintek.fnFilter('');
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            result_soshum = $('#data_soshum').dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": '{{ url('result/data_soshum') }}',
+                    "type": "POST"
+                },
+                "aoColumns": [{
+                        "mData": function(data, type, dataToSet, meta, row) {
+                            return (meta.row + meta.settings._iDisplayStart + 1);
+                        },
+                        "sWidth": "",
+                        "sClass": "text-center",
+                        "bSortable": false,
+                        "bSearchable": false
+                    },
+                    {
+                        "mData": "name",
+                        "nama": "name",
                         "sWidth": "",
                         "sClass": "",
                         "bSortable": true,
                         "bSearchable": true
                     },
                     {
-                        "mData": "role",
-                        "name": "role",
-                        "sWidth": "",
-                        "sClass": "text-center",
-                        "bSortable": false,
-                        "bSearchable": false
-                    },
-                    {
-                        "mData": "type",
-                        "name": "type",
-                        "sWidth": "",
-                        "sClass": "text-center",
-                        "bSortable": false,
-                        "bSearchable": false
-                    },
-                    {
-                        "mData": "updated_at",
-                        "nama": "updated_at",
+                        "mData": "score",
+                        "nama": "score",
                         "sWidth": "",
                         "sClass": "",
                         "bSortable": true,
-                        "bSearchable": false
-                    },
-                    {
-                        "mData": "detail",
-                        "sWidth": "",
-                        "sClass": "text-center",
-                        "bSortable": false,
-                        "bSearchable": false
+                        "bSearchable": true
                     }
                 ],
-                "aoColumnDefs": [{
-                        "aTargets": [3],
-                        "mData": null,
-                        "mRender": function(data, type, row) {
-                            switch (row.role) {
-                                case 0:
-                                    return '<span class="badge badge-primary">Admin</span>';
-                                    break;
-                                case 1:
-                                    return '<span class="badge badge-success">User</span>';
-                                    break;
-                            }
-                        }
-                    }, 
-                    // 
-
-                ],
             });
-            
+
             $('div.dataTables_filter input').unbind().bind('keyup', function(e) {
                 if (e.keyCode == 13) {
-                    manage_user.fnFilter(this.value);
+                    result_saintek.fnFilter(this.value);
                 } else {
-                    if (this.value.length == 0) manage_user.fnFilter('');
+                    if (this.value.length == 0) result_saintek.fnFilter('');
                 }
             });
         });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AnswerQuestionBanks;
 use App\Models\DetailBankQuestion;
+use App\Models\DetailCreateExam;
 use App\Models\DetailExam;
 use App\Models\Exam;
 use App\Models\Schedule;
@@ -31,14 +32,20 @@ class ExamController extends Controller
     public function index(Guard $auth)
     {
         $m_exam = 'active';
-        $schedule = Schedule::select('create_exams.name', 'create_exams.duration', 'types.name as type', 'schedules.open', 'schedules.close', 'schedules.status', 'schedules.id_exam', 'schedules.id as id_schedule', 'exams.id', 'exams.complete')
+        $schedule = Schedule::select('create_exams.name', 'create_exams.duration', 'types.name as type', 'schedules.open', 'schedules.close', 'schedules.status', 'schedules.id_exam', 'schedules.id as id_schedule', 'exams.id')
         ->join('create_exams', 'create_exams.id', 'schedules.id_exam')
         ->leftjoin('exams', 'schedules.id', 'exams.id_schedule')
         ->join('types', 'types.id', '=', 'create_exams.id_type')
         ->where('create_exams.id_type', '=', $auth->user()->id_type)
         ->first();
         $user = $auth->user();
-        return view('exam.index', compact('schedule', 'm_exam', 'user'));
+        $exam = Exam::where('exams.id_user', '=', $auth->user()->id)->first();
+        if ($exam==null) {
+            $complete = 0;
+        } else {
+            $complete = $exam->complete;
+        }
+        return view('exam.index', compact('schedule', 'm_exam', 'user', 'exam', 'complete'));
     }
 
     public function data()
@@ -148,7 +155,7 @@ class ExamController extends Controller
 
     public function getquestion(Request $request)
     {
-        $question = DetailBankQuestion::select('detail_bank_questions.id', 'detail_bank_questions.question','categories.name as category')
+        $question = DetailBankQuestion::select('detail_bank_questions.id', 'detail_bank_questions.question', 'categories.name as category')
         ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
         ->join('categories', 'categories.id', 'bank_questions.id_category')
       ->where('detail_bank_questions.id', $request->id)
@@ -163,7 +170,7 @@ class ExamController extends Controller
         ->first();
         return ['question' => $question, 'answer' => $answer, 'answer_assessment' => $answer_assessment];
     }
-    public function submit_answer(Request $request)
+    public function submit_answer(Guard $auth, Request $request)
     {
         $id_question = $request->id_question;
 
@@ -173,12 +180,27 @@ class ExamController extends Controller
       })
       ->first();
 
+        // $getWeight = DetailCreateExam::where('id_detail_bank_question', $request->id_question)->first();
         $answer = AnswerQuestionBanks::where('id', $request->id_answer)->first();
+        $weight=0;
         if ($answer->status == 1) {
             $status = 1;
+            // $weight = $getWeight->weight + 1;
         } else {
             $status = 0;
+            // $weight = $getWeight->weight;
         }
+        // $exam = Exam::where('id_user', $auth->user()->id)
+        // ->join('detail_exams', 'detail_exams.id_exam', 'exams.id')
+        // ->where('exams.id', $request->id_exam)
+        // ->first();
+        // if ($exam==null) {
+        //     DetailCreateExam::where('id_detail_bank_question', $request->id_question)
+        // ->update(['weight' => $weight]);
+        // } else {
+        //     DetailCreateExam::where('id_detail_bank_question', $request->id_question)
+        //     ->update(['weight' => $weight-1]);
+        // }
         // return $status;
         if ($isExist) {
             return DetailExam::where('id', $isExist->id)
@@ -198,10 +220,11 @@ class ExamController extends Controller
     public function completed(Request $request)
     {
         $assessment = Exam::where('id', $request->id)->first();
-        $question = DetailExam::where('id_exam', $assessment->id_exam)->get();
+        $question = DetailExam::where('id_exam', $assessment->id)->get();
+        // dd($question);
 
         foreach ($question as $key => $value) {
-            $id_question = $value->id_question;
+            $id_question = $value->id_question;       
 
             $is_exists = DetailExam::where('id_exam', $request->id)
         ->where(function ($query) use ($id_question) {
@@ -216,6 +239,17 @@ class ExamController extends Controller
 
                 DetailExam::create($data);
             }
+            
+            $getWeight = DetailCreateExam::where('id_detail_bank_question', $id_question)->first();
+            $weight=0;
+            if ($value->status == 1) {
+                $weight = $getWeight->weight + 1;
+            } else {
+                $weight = $getWeight->weight;
+            }
+            DetailCreateExam::where('id_detail_bank_question', $id_question)
+        ->update(['weight' => $weight]);
+            
         }
         return Exam::where('id', $request->id)
       ->update(['complete' => 1]);
@@ -232,7 +266,7 @@ class ExamController extends Controller
         try {
             $detail=DetailExam::where('id_exam', $request->id)->get();
             foreach ($detail as $key => $value) {
-                DB::table('detail_exams')->where('id_exam', $value['id'])->delete();
+                DB::table('detail_exams')->where('id_exam', $value['id_exam'])->delete();
             }
             Exam::where('id', '=', $request->input('id'))->delete();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('delete.success')]);

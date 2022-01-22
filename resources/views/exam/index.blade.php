@@ -61,7 +61,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <input id="complete" type="text" value="{{ $schedule->complete }} " hidden>
+                                <input id="complete" type="text" value="{{ $complete }} " hidden>
                                 <div class="card-body">
                                     <table class="table table-striped table-hover">
                                         <tbody>
@@ -91,7 +91,7 @@
                                                 </td>
                                             </tr><tr>
                                                 <td>Complete</td>
-                                                <td>@switch ($schedule->complete)
+                                                <td>@switch ($complete)
                                                         @case(1)
                                                             <span class="badge badge-success">Complete</span>
                                                         @break

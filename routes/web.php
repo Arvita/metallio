@@ -7,6 +7,7 @@ use App\Http\Controllers\CreateExamController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ResultController;
 use App\Http\Controllers\DetailBankQuestionController;
 use App\Http\Controllers\DetailCreateExamController;
 use App\Imports\UsersImport;
@@ -101,6 +102,13 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::post('exam/data', [App\Http\Controllers\ExamController::class, 'data']);
     Route::get('exam/{kode}/conf', [App\Http\Controllers\ExamController::class, 'confirm']);
     Route::resource('/exam', ExamController::class);
+
+    Route::post('result/data_saintek', [App\Http\Controllers\ResultController::class, 'data_saintek']);
+    Route::post('result/data_soshum', [App\Http\Controllers\ResultController::class, 'data_soshum']);
+    Route::get('/result/saintek_pdf', [App\Http\Controllers\ResultController::class, 'saintek_pdf']);
+    Route::get('/result/soshum_pdf', [App\Http\Controllers\ResultController::class, 'soshum_pdf']);
+    Route::resource('/result', ResultController::class);
+
 
     Route::post('/file/upload', [App\Http\Controllers\FileController::class, 'upload'])->name('file.upload');
 });
