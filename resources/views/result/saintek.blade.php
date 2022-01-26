@@ -18,9 +18,22 @@
 	<table class='table table-bordered'>
 		<thead>
 			<tr>
-				<th width="5%">No</th>
-				<th>Name</th>
-				<th>Score</th>
+				<th rowspan="2" width="5%">No</th>
+				<th rowspan="2">Name</th>
+				<th colspan="5" style="text-align: center">TPS</th>
+				<th colspan="4" style="text-align: center">TKA</th>
+				<th rowspan="2">Total</th>
+			</tr>
+			<tr>
+				<th>PBM</th>
+				<th>PPU</th>
+				<th>PK</th>
+				<th>PU</th>
+				<th>BING</th>
+				<th>MTK</th>
+				<th>FISIKA</th>
+				<th>KIMIA</th>
+				<th>BIOLOGI</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -31,6 +44,15 @@
                 {{-- @foreach($value as $s => $values) --}}
 				<td>{{ $j }}</td>
 				<td>{{$value['name']}}</td>
+				<td>{{$value['pbm']}}</td>
+				<td>{{$value['ppu']}}</td>
+				<td>{{$value['pk']}}</td>
+				<td>{{$value['pu']}}</td>
+				<td>{{$value['bing']}}</td>
+				<td>{{$value['mtk']}}</td>
+				<td>{{$value['fisika']}}</td>
+				<td>{{$value['kimia']}}</td>
+				<td>{{$value['biologi']}}</td>
 				<td>{{$value['score']}}</td>
                 {{-- @endforeach --}}
                 @php $j++; @endphp

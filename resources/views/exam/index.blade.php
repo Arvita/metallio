@@ -21,101 +21,114 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    @if($user->role==0)
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="exam" class="display table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th>Duration</th>
-                                            <th>Complete</th>
-                                            <th>Start</th>
-                                            <th>Finsih</th>
-                                            <th style="width: 10%">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    @if (isset($schedule)&&$user->role==1)
-                        <form action="{{ url('exam/exam') }}" method="post">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $schedule->id }}" />
-                            <input type="hidden" name="id_schedule" value="{{ $schedule->id_schedule }}" />
-                            <input type="hidden" name="id_exam" value="{{ $schedule->id_exam }}" />
-                            <input type="hidden" name="start" id="start">
-                            <input type="hidden" name="finish" id="finish">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="d-flex align-items-center">
-                                        <button id="take_exam" type="submit" class=" btn btn-primary btn-round ml-auto">
-                                            Take exam
-                                        </button>
-                                    </div>
-                                </div>
-                                <input id="complete" type="text" value="{{ $complete }} " hidden>
-                                <div class="card-body">
-                                    <table class="table table-striped table-hover">
+                    @if ($user->role == 0)
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="exam" class="display table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Duration TPS</th>
+                                                <th>Duration TPA</th>
+                                                <th>Complete</th>
+                                                <th style="width: 10%">Action</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Name</td>
-                                                <td>{{ $schedule->name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Type</td>
-                                                <td>{{ $schedule->type }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Duration</td>
-                                                <td><input id="duration" type="text" value="{{ $schedule->duration }} "
-                                                    hidden>{{ $schedule->duration }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Status</td>
-                                                <td>@switch ($schedule->status)
-                                                        @case(1)
-                                                            <span class="badge badge-primary">Active</span>
-                                                        @break
-                                                        @case(0)
-                                                            <span class="badge badge-danger">Not Active</span>
-                                                        @break
-                                                    @endswitch
-                                                </td>
-                                            </tr><tr>
-                                                <td>Complete</td>
-                                                <td>@switch ($complete)
-                                                        @case(1)
-                                                            <span class="badge badge-success">Complete</span>
-                                                        @break
-                                                        @case(0)
-                                                            <span class="badge badge-danger">Not Complete</span>
-                                                        @break
-                                                    @endswitch
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Open</td>
-                                                <td id="opens"><input id="open" type="text" value="{{ $schedule->open }} "
-                                                        hidden>{{ $schedule->open }} </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Close</td>
-                                                <td id="closes"><input id="close" type="text"
-                                                        value="{{ $schedule->close }} " hidden>{{ $schedule->close }}
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                    @endif
+                    @if (isset($schedule) && $user->role == 1)
+                        @if ($complete_tps == 1)
+                            <form action="{{ url('exam/exam_tpa/'.$exam->id) }}" method="get">
+                            @else
+                                <form action="{{ url('exam/exam_tps') }}" method="post">
+                        @endif
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $schedule->id }}" />
+                        <input type="hidden" name="id_schedule" value="{{ $schedule->id_schedule }}" />
+                        <input type="hidden" name="id_exam" value="{{ $schedule->id_exam }}" />
+                        <input type="hidden" name="start" id="start">
+                        <input type="hidden" name="finish" id="finish">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex align-items-center">
+
+                                    <button id="take_exam" type="submit" class=" btn btn-primary btn-round ml-auto">
+                                        Take exam
+                                    </button>
+
+                                </div>
+                            </div>
+                            <input id="complete" type="text" value="{{ $complete }} " hidden>
+                            <div class="card-body">
+                                <table class="table table-striped table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>{{ $schedule->name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Type</td>
+                                            <td>{{ $schedule->type }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Duration TPS</td>
+                                            <td><input id="duration_tps" type="text"
+                                                    value="{{ $schedule->duration_tps }} "
+                                                    hidden>{{ $schedule->duration_tps }} menit</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Duration TPA</td>
+                                            <td><input id="duration_tpa" type="text"
+                                                    value="{{ $schedule->duration_tpa }} "
+                                                    hidden>{{ $schedule->duration_tpa }} menit</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status</td>
+                                            <td>@switch ($schedule->status)
+                                                    @case(1)
+                                                        <span class="badge badge-primary">Active</span>
+                                                    @break
+                                                    @case(0)
+                                                        <span class="badge badge-danger">Not Active</span>
+                                                    @break
+                                                @endswitch
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Complete</td>
+                                            <td>@switch ($complete)
+                                                    @case(1)
+                                                        <span class="badge badge-success">Complete</span>
+                                                    @break
+                                                    @case(0)
+                                                        <span class="badge badge-danger">Not Complete</span>
+                                                    @break
+                                                @endswitch
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Open</td>
+                                            <td id="opens"><input id="open" type="text" value="{{ $schedule->open }} "
+                                                    hidden>{{ $schedule->open }} </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Close</td>
+                                            <td id="closes"><input id="close" type="text" value="{{ $schedule->close }} "
+                                                    hidden>{{ $schedule->close }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         </form>
                     @endif
                 </div>
@@ -137,7 +150,7 @@
         var ajaxModal = $('#ajax-modal');
         var ajaxModalPopup = $('#ajax-modal-popup');
         var ajaxModalElement = $('#ajax-modal-element');
-        
+
 
         $.ajaxSetup({
             headers: {
@@ -179,8 +192,16 @@
                         "bSearchable": true
                     },
                     {
-                        "mData": "duration",
-                        "name": "duration",
+                        "mData": "duration_tps",
+                        "name": "duration_tps",
+                        "sWidth": "",
+                        "sClass": "text-center",
+                        "bSortable": false,
+                        "bSearchable": false
+                    },
+                    {
+                        "mData": "duration_tpa",
+                        "name": "duration_tpa",
                         "sWidth": "",
                         "sClass": "text-center",
                         "bSortable": false,
@@ -195,22 +216,6 @@
                         "bSearchable": false
                     },
                     {
-                        "mData": "start",
-                        "name": "start",
-                        "sWidth": "",
-                        "sClass": "text-center",
-                        "bSortable": false,
-                        "bSearchable": false
-                    },
-                    {
-                        "mData": "finish",
-                        "name": "finish",
-                        "sWidth": "",
-                        "sClass": "text-center",
-                        "bSortable": false,
-                        "bSearchable": false
-                    },
-                    {
                         "mData": "detail",
                         "sWidth": "",
                         "sClass": "text-center",
@@ -219,7 +224,7 @@
                     }
                 ],
                 "aoColumnDefs": [{
-                        "aTargets": [4],
+                        "aTargets": [5],
                         "mData": null,
                         "mRender": function(data, type, row) {
                             switch (row.complete) {
@@ -231,12 +236,12 @@
                                     break;
                             }
                         }
-                    }, 
+                    },
                     // 
 
                 ],
             });
-            
+
             $('div.dataTables_filter input').unbind().bind('keyup', function(e) {
                 if (e.keyCode == 13) {
                     exam.fnFilter(this.value);
@@ -248,13 +253,13 @@
         var open = document.getElementById("open").value;
         var close = document.getElementById("close").value;
         var complete = document.getElementById("complete").value;
-        var duration = document.getElementById("duration").value;
+        var duration_tps = document.getElementById("duration_tps").value;
         document.getElementById("opens").innerHTML = open + "  (" + moment(open,
             'YYYY-MM-DD, h:mm A').fromNow() + ")";
         document.getElementById("closes").innerHTML = close + "  (" + moment(close,
             'YYYY-MM-DD, h:mm A').fromNow() + ")";
         document.getElementById("start").value = moment().format('YYYY-MM-DD, h:mm:ss A');
-        document.getElementById("finish").value = moment().add(parseInt(duration), 'minutes').add(4, 'seconds').format(
+        document.getElementById("finish").value = moment().add(parseInt(duration_tps), 'minutes').add(4, 'seconds').format(
             'YYYY-MM-DD, h:mm:ss A');
 
         var str = open;
@@ -264,9 +269,8 @@
         var cls = close.split(", ");
 
         if (!(moment().isAfter(moment(res[0] + ', ' + res[1], 'YYYY-MM-DD, h:mm A')) && moment().isBefore(moment(cls[0] +
-                ', ' + cls[1], 'YYYY-MM-DD, h:mm A')))||(complete==1)) {
+                ', ' + cls[1], 'YYYY-MM-DD, h:mm A'))) || (complete == 1)) {
             document.getElementById("take_exam").disabled = true;
         }
-
     </script>
 @endpush

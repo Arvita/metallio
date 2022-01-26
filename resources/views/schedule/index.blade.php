@@ -29,7 +29,11 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex align-items-center">
+                            <div class="align-items-center">
+                                <a href="{{ url('schedule/reset') }}" class="btn btn-primary btn-round ml-auto">
+                                    <i class="fas fa-undo-alt"></i>
+                                    Reset Weight
+                                </a>
                                 <button data-url="{{ route('schedule.create') }}"
                                     class="ajax_modal btn btn-primary btn-round ml-auto">
                                     <i class="fa fa-plus"></i>
@@ -98,7 +102,7 @@
                         "sClass": "text-center",
                         "bSortable": false,
                         "bSearchable": false
-                    },{
+                    }, {
                         "mData": "name",
                         "nama": "name",
                         "sWidth": "",
@@ -147,7 +151,7 @@
                     }
                 ],
             });
-            
+
             $('div.dataTables_filter input').unbind().bind('keyup', function(e) {
                 if (e.keyCode == 13) {
                     schedule.fnFilter(this.value);

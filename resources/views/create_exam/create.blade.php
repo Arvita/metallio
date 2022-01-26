@@ -25,7 +25,7 @@
                             value="{{ isset($create_exam) ? $create_exam->name : '' }}">
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                     <div class="form-group form-group-default">
                         <label>Type</label>
                         <select name="type" class="form-control" id="type">
@@ -40,9 +40,16 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group form-group-default">
-                        <label>Duration</label>
-                        <input id="duration" type="text" class="form-control" placeholder="fill duration" name="duration"
-                            value="{{ isset($create_exam) ? $create_exam->duration : '' }}"> Minutes
+                        <label>Duration TPS</label>
+                        <input id="duration_tps" type="text" class="form-control" placeholder="fill duration tps" name="duration_tps"
+                            value="{{ isset($create_exam) ? $create_exam->duration_tps : '' }}"> Minutes
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-group-default">
+                        <label>Duration TPA</label>
+                        <input id="duration_tpa" type="text" class="form-control" placeholder="fill duration tpa" name="duration_tpa"
+                            value="{{ isset($create_exam) ? $create_exam->duration_tpa : '' }}"> Minutes
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -76,7 +83,10 @@
             type: {
                 required: true
             },
-            duration: {
+            duration_tpa: {
+                required: true
+            },
+            duration_tps: {
                 required: true
             }
         },

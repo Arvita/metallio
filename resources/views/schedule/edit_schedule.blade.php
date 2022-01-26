@@ -30,9 +30,14 @@
                             value="{{ $data->type }}" readonly>
                     </div>
                     <div class="form-group form-group-default">
-                        <label>Duration</label>
-                        <input id="duration" type="text" class="form-control" placeholder="fill duration"
-                            name="duration" value="{{ $data->duration }}" readonly>
+                                            <label>Duration TPS</label>
+                                            <input id="duration_tps" type="text" class="form-control" placeholder="fill duration tps"
+                                                name="duration tps" value="{{ $data->duration_tps }}" readonly>
+                                        </div>
+                    <div class="form-group form-group-default">
+                        <label>Duration TPA</label>
+                        <input id="duration_tpa" type="text" class="form-control" placeholder="fill duration tpa"
+                            name="duration tpa" value="{{ $data->duration_tpa }}" readonly>
                     </div>
                     <div class="form-group form-group-default col-sm-12">
                         <label>

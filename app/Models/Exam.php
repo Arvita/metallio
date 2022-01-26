@@ -14,7 +14,7 @@ class Exam extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'id_schedule','id_user','start','finish','complete'
+        'id_schedule','id_user','start_tps','finish_tps','start_tpa','finish_tpa','complete','complete_tps'
     ];
     protected static function boot(){
         parent::boot();

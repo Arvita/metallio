@@ -22,7 +22,8 @@
             <div class="row">
                 <div class="col-sm-9">
                     <div class="panel panel-default mt20" style="min-height: 360px;">
-                        <div class="panel-body" style="word-break: break-word;">                            
+                        <div class="panel-body" style="word-break: break-word;">  
+                            <h2>TPS </h2>                           
                             <h3>Kategori: </h3>
                             <span id="divCategory" class="badge badge-warning">
                             </span>
@@ -98,21 +99,20 @@
                 </div>
             </div>
 
-
         </div>
     </div>
 
     <!-- !! MODAL !! -->
     <a hidden data-toggle="modal" class="btn btn-primary" role="button" href="#myModal2" id="btn_modal2">
     </a>
-    <div id="myModal1" class="modal">
+    <div id="myModal1" class="modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
         <div class="modal-header stack0">
             <h3 class="text-center">Konfirmasi</h3>
         </div>
         <div class="modal-body text-center">
             <h5>
-                Apakah anda telah selesai mengerjakan ujian ? silahkan klik <strong>finish</strong> untuk mengakhiri ujian
-                ini.
+                Apakah anda telah selesai mengerjakan ujian TPS? silahkan klik <strong>next</strong> untuk mengakhiri ujian TPS
+                ini dan melanjutkan ke ujian TPA berikutnya.
             </h5>
         </div>
         <div class="modal-footer">
@@ -120,25 +120,27 @@
                 Cancel
             </button>
             <button type="button" data-dismiss="modal" class="btn btn-primary" onclick="completed()">
-                finish
+                Next
             </button>
         </div>
     </div>
-    <div id="myModal2" class="modal">
+    <div id="myModal2" class="modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
         <div class="modal-header stack0">
             <h3 class="text-center">Konfirmasi</h3>
         </div>
         <div class="modal-body text-center">
             <h5>
-                Waktu telah berakhir, jawaban otomatis tersimpan!
+                Waktu telah berakhir, jawaban otomatis tersimpan! anda akan melanjutkan ke ujian TPA berikutnya.
             </h5>
         </div>
         <div class="modal-footer">
             <button type="button" data-dismiss="modal" class="btn btn-primary" onclick="completed()">
-                finish
+                Next
             </button>
         </div>
     </div>
+    
+    <input id="duration_tpa" type="text" value="{{ $exam->duration_tpa }} " hidden>
 
 @endsection
 
@@ -162,6 +164,8 @@
 
         let arrFile = [];
 
+        
+        let duration_tpa = document.getElementById("duration_tpa").value;
         window.onerror = function(e) {
             if (e == "Uncaught TypeError: Cannot read property 'bytesSent' of undefined") {
                 return true;
@@ -270,11 +274,8 @@
                         $('input[name=multiple_answer][value=' + $(this).attr('id') + ']').iCheck(
                             'check');
                     });
-
-
                 }
             })
-
         }
 
         function next() {
@@ -295,16 +296,18 @@
             }
 
         }
-
         function completed() {
 
-            $.post("{{ url('exam/completed') }}", {
+            $.post("{{ url('exam/start_tpa') }}", {
                 _token: "{{ csrf_token() }}",
-                id: "{{ $exam->id }}"
+                id: "{{ $exam->id }}",
+                finish : moment().add(parseInt(duration_tpa), 'minutes').add(4, 'seconds').format(
+            'YYYY-MM-DD, h:mm:ss A'),
+                start : moment().format('YYYY-MM-DD, h:mm:ss A'),
             }, function(data, textStatus, xhr) {
                 console.log(data)
                 if (data != 0) {
-                    window.location.href = "{{ url('exam') }}";
+                    window.location.href = "{{ url('exam/exam_tpa/') }}/"+data.id ;
 
                 } else {
                     alert('Ada kesalahan!');
@@ -332,7 +335,7 @@
 
             var timeInterval = setInterval(function() {
                 let now = moment().format('YYYY-MM-DD, h:mm:ss A');
-                let finish = moment("{{ $exam->finish }}", 'YYYY-MM-DD, h:mm:ss A').format(
+                let finish = moment("{{ $exam->finish_tps }}", 'YYYY-MM-DD, h:mm:ss A').format(
                     'YYYY-MM-DD, h:mm:ss A');
 
                 let ms = moment(finish, 'YYYY-MM-DD, h:mm:ss A').diff(moment(now, 'YYYY-MM-DD, h:mm:ss A'));

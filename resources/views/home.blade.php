@@ -6,7 +6,7 @@
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-3 pb-4">
             <div>
                 <h2 class="pb-2 fw-bold">Dashboard</h2>
-                <h5 class="op-7 mb-2">Welcome to Metallio 2020 <strong>{{ Auth::user()->name }}</strong>.</h5>
+                <h5 class="op-7 mb-2">Welcome to Metallio 2022.</h5>
             </div>
         </div>
         @if ( Auth::user()->role ==0 )

@@ -64,10 +64,10 @@ class HomeController extends Controller
         $namesaintek = array();
         $i = 0;
         foreach ($valsaintek as $key => $value) {            
-            $sum = 0;
+            $sum = 0.0;
             foreach ($value as $keys => $values) {
                 if ($values->status==1) {
-                    $sum+=($values->score / $values->weight);
+                    $sum= $sum + ($values->score / $values->weight);
                 }
             }
             $scoresaintek[$i] = $sum;
@@ -100,10 +100,10 @@ class HomeController extends Controller
         $namesoshum = array();
         $i = 0;
         foreach ($valsoshum as $key => $value) {            
-            $sum = 0;
+            $sum = 0.0;
             foreach ($value as $keys => $values) {
                 if ($values->status==1) {
-                    $sum+=($values->score / $values->weight);
+                    $sum= $sum + ($values->score / $values->weight);
                 }
             }
             $scoresoshum[$i] = $sum;

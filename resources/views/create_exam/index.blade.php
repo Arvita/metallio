@@ -45,7 +45,8 @@
                                             <th>No</th>
                                             <th>Name</th>
                                             <th>Type</th>
-                                            <th>Duration</th>
+                                            <th>Duration TPS</th>
+                                            <th>Duration TPA</th>
                                             <th>Update</th>
                                             <th>Question</th>
                                             <th style="width: 10%">Action</th>
@@ -116,8 +117,16 @@
                         "bSearchable": true
                     },
                     {
-                        "mData": "duration",
-                        "nama": "duration",
+                        "mData": "duration_tps",
+                        "nama": "duration_tps",
+                        "sWidth": "",
+                        "sClass": "",
+                        "bSortable": true,
+                        "bSearchable": true
+                    },                       
+                    {
+                        "mData": "duration_tpa",
+                        "nama": "duration_tpa",
                         "sWidth": "",
                         "sClass": "",
                         "bSortable": true,

@@ -43,7 +43,8 @@ class CreateExamController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|min:2',
-                'duration' => 'required',
+                'duration_tps' => 'required',
+                'duration_tpa' => 'required',
                 'type' => 'required'
             ]);
 
@@ -53,7 +54,8 @@ class CreateExamController extends Controller
 
             $create_exam = new CreateExam;
             $create_exam->name = strip_tags($request->input('name'));
-            $create_exam->duration = strip_tags($request->input('duration'));
+            $create_exam->duration_tps = strip_tags($request->input('duration_tps'));
+            $create_exam->duration_tpa = strip_tags($request->input('duration_tpa'));
             $create_exam->id_type = strip_tags($request->input('type'));
             $create_exam->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('insert.success')]);
@@ -63,7 +65,7 @@ class CreateExamController extends Controller
 
     public function data()
     {
-        $data = CreateExam::select('create_exams.name', 'create_exams.updated_at','create_exams.duration', 'create_exams.id', 'create_exams.created_at','types.name as type')
+        $data = CreateExam::select('create_exams.name', 'create_exams.updated_at','create_exams.duration_tps','create_exams.duration_tpa', 'create_exams.id', 'create_exams.created_at','types.name as type')
         ->join('types','types.id','=','create_exams.id_type')
         ->latest()
         ->get();
@@ -98,7 +100,8 @@ class CreateExamController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|min:2',
-                'duration' => 'required',
+                'duration_tps' => 'required',
+                'duration_tpa' => 'required',
                 'type' => 'required'
             ]);
 
@@ -108,7 +111,8 @@ class CreateExamController extends Controller
 
             $create_exam = CreateExam::find($id);
             $create_exam->name = strip_tags($request->input('name'));
-            $create_exam->duration = strip_tags($request->input('duration'));
+            $create_exam->duration_tps = strip_tags($request->input('duration_tps'));
+            $create_exam->duration_tpa = strip_tags($request->input('duration_tpa'));
             $create_exam->id_type = strip_tags($request->input('type'));
             $create_exam->save();
             return response()->json(['stat' => true, 'msg' => $this->getMessage('update.success')]);

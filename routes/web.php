@@ -93,9 +93,12 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::post('/schedule/create_schedule/', [App\Http\Controllers\ScheduleController::class, 'store']);
     Route::get('/schedule/schedule/{id}', [App\Http\Controllers\ScheduleController::class, 'schedule']);
     Route::post('/schedule/update/', [App\Http\Controllers\ScheduleController::class, 'update']);
+    Route::get('/schedule/reset/', [App\Http\Controllers\ScheduleController::class, 'reset']);
     Route::resource('/schedule', ScheduleController::class);
 
-    Route::post('/exam/exam', [App\Http\Controllers\ExamController::class, 'take_exam']);
+    Route::post('/exam/exam_tps', [App\Http\Controllers\ExamController::class, 'take_exam_tps']);
+    Route::get('/exam/exam_tpa/{kode}', [App\Http\Controllers\ExamController::class, 'take_exam_tpa']);
+    Route::post('/exam/start_tpa', [App\Http\Controllers\ExamController::class, 'start_tpa']);
     Route::post('/exam/getquestion', [App\Http\Controllers\ExamController::class, 'getquestion']);
     Route::post('/exam/submit_answer', [App\Http\Controllers\ExamController::class, 'submit_answer']);
     Route::post('/exam/completed/', [App\Http\Controllers\ExamController::class, 'completed']);

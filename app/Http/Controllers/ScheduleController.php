@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CreateExam;
 use App\Models\Schedule;
+use App\Models\DetailCreateExam;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +72,7 @@ class ScheduleController extends Controller
 
     public function schedule($id)
 	{
-		$data = Schedule::select('schedules.*', 'create_exams.id as id_exam', 'create_exams.id_type','create_exams.name','create_exams.duration', 'types.name as type')
+		$data = Schedule::select('schedules.*', 'create_exams.id as id_exam', 'create_exams.id_type','create_exams.name','create_exams.duration_tps','create_exams.duration_tpa', 'types.name as type')
         ->join('create_exams','create_exams.id','=','schedules.id_exam')
         ->join('types','types.id','=','create_exams.id_type')
         ->where('schedules.id', $id)
@@ -94,7 +95,7 @@ class ScheduleController extends Controller
 
     public function confirm($id)
     {
-        $schedule = Schedule::select('schedules.*', 'create_exams.id as id_exam', 'create_exams.id_type','create_exams.name','create_exams.duration', 'types.name as type')
+        $schedule = Schedule::select('schedules.*', 'create_exams.id as id_exam', 'create_exams.id_type','create_exams.name','create_exams.duration_tps','create_exams.duration_tpa', 'types.name as type')
         ->join('create_exams','create_exams.id','=','schedules.id_exam')
         ->join('types','types.id','=','create_exams.id_type')
         ->where('schedules.id', $id)
@@ -110,5 +111,11 @@ class ScheduleController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['stat' => false, 'msg' => $this->getMessage('delete.prevent')]);
         }
+    }
+
+    public function reset()
+    {
+        DetailCreateExam::query()->update(['weight' => 0]);
+        return back();
     }
 }

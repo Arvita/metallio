@@ -9,9 +9,11 @@ use App\Models\DetailExam;
 use App\Models\Exam;
 use App\Models\Schedule;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
@@ -32,7 +34,7 @@ class ExamController extends Controller
     public function index(Guard $auth)
     {
         $m_exam = 'active';
-        $schedule = Schedule::select('create_exams.name', 'create_exams.duration', 'types.name as type', 'schedules.open', 'schedules.close', 'schedules.status', 'schedules.id_exam', 'schedules.id as id_schedule', 'exams.id')
+        $schedule = Schedule::select('create_exams.name', 'create_exams.duration_tps', 'create_exams.duration_tpa', 'types.name as type', 'schedules.open', 'schedules.close', 'schedules.status', 'schedules.id_exam', 'schedules.id as id_schedule', 'exams.id')
         ->join('create_exams', 'create_exams.id', 'schedules.id_exam')
         ->leftjoin('exams', 'schedules.id', 'exams.id_schedule')
         ->join('types', 'types.id', '=', 'create_exams.id_type')
@@ -42,15 +44,17 @@ class ExamController extends Controller
         $exam = Exam::where('exams.id_user', '=', $auth->user()->id)->first();
         if ($exam==null) {
             $complete = 0;
+            $complete_tps = 0;
         } else {
             $complete = $exam->complete;
+            $complete_tps = $exam->complete_tps;
         }
-        return view('exam.index', compact('schedule', 'm_exam', 'user', 'exam', 'complete'));
+        return view('exam.index', compact('schedule', 'm_exam', 'user', 'exam', 'complete','complete_tps'));
     }
 
     public function data()
     {
-        $data = Exam::select('users.name', 'create_exams.duration', 'exams.start', 'exams.finish', 'exams.complete', 'exams.id', 'exams.created_at', 'exams.updated_at', 'types.name as type')
+        $data = Exam::select('users.name', 'create_exams.duration_tps', 'create_exams.duration_tpa', 'exams.start_tps', 'exams.finish_tps', 'exams.start_tpa', 'exams.finish_tpa', 'exams.complete', 'exams.id', 'exams.created_at', 'exams.updated_at', 'types.name as type')
         ->join('schedules', 'schedules.id', 'exams.id_schedule')
         ->join('create_exams', 'create_exams.id', 'schedules.id_exam')
         ->join('types', 'types.id', 'create_exams.id_type')
@@ -66,7 +70,7 @@ class ExamController extends Controller
             ->make(true);
     }
 
-    public function take_exam(Guard $auth, Request $request)
+    public function take_exam_tps(Guard $auth, Request $request)
     {
         $m_exam = 'active open';
         $id_user = $auth->user()->id;
@@ -80,22 +84,41 @@ class ExamController extends Controller
           'id_schedule' => $request->id_schedule,
           'id_exam' => $request->id,
           'id_user' => $id_user,
-          'start' => $request->start,
-          'finish' => $request->finish
+          'start_tps' => $request->start,
+          'finish_tps' => $request->finish
         ];
             $exam = Exam::create($data);
-        } else {
-            $exam = Exam::where('id', $request->id)->first();
+            $exam = Exam::select('exams.id', 'create_exams.duration_tpa', 'create_exams.duration_tps', 'exams.complete', 'exams.finish_tps', 'exams.start_tpa')
+            ->join('schedules', 'schedules.id', 'exams.id_schedule')->join('create_exams', 'create_exams.id', 'schedules.id_exam')->where('exams.id', $exam->id)->first();
         }
+        else{
+            
+            $exam = Exam::select('exams.id', 'create_exams.duration_tpa', 'create_exams.duration_tps', 'exams.complete', 'exams.finish_tps', 'exams.start_tpa')
+            ->join('schedules', 'schedules.id', 'exams.id_schedule')->join('create_exams', 'create_exams.id', 'schedules.id_exam')->where('exams.id', $request->id)->first();
+        }
+           // dd($exam);
+        
         // return $exam_assessment->completed == 1;
-        if ($exam->completed == 1) {
-            return redirect(url('exam'));
-        }
+        
         $id_exam = $exam->id;
-  
-        $bahasa_inggris = Exam::select('detail_bank_questions.id', 'categories.name')
+
+        //pbm
+        $pbm = Exam::select('detail_bank_questions.id', 'categories.name')
         ->where('exams.id', $id_exam)
-        ->where('categories.name', 'Bahasa Inggris')
+        ->where('categories.name', 'PBM')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+        
+        //PPU
+        $ppu = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'PPU')
         ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
         ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
         ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
@@ -105,9 +128,10 @@ class ExamController extends Controller
         ->groupBy('detail_bank_questions.id', 'categories.name')
         ->inRandomOrder()->get();
 
-        $tps = Exam::select('detail_bank_questions.id', 'categories.name')
+        //PK
+        $pk = Exam::select('detail_bank_questions.id', 'categories.name')
         ->where('exams.id', $id_exam)
-        ->where('categories.name', 'TPS')
+        ->where('categories.name', 'PK')
         ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
         ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
         ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
@@ -116,12 +140,91 @@ class ExamController extends Controller
         ->join('categories', 'categories.id', 'bank_questions.id_category')
         ->groupBy('detail_bank_questions.id', 'categories.name')
         ->inRandomOrder()->get();
-        $main =$bahasa_inggris->merge($tps);
+
+        //PPU
+        $ppu = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'PPU')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+
+        //PU
+        $pu = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'PU')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+  
+        $inggris = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'Inggris')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+
+        $join1 =$pbm->merge($ppu);
+        $join2 =$pk->merge($join1);
+        $join3 =$pu->merge($join2);
+        $id_question =$inggris->merge($join3);
+
+        $answered = DetailExam::where('id_exam', $id_exam)->get();
+        $arr_answer = array();
+        foreach ($answered as $key => $value) {
+            $arr_answer[$value->id_question] =  $value;
+        }
+        
+        return view('exam.take_exam_tps', compact('m_exam', 'id_question', 'exam', 'arr_answer', 'id_exam'));
+    }
+
+    public function start_tpa(Guard $auth, Request $request)
+    {
+        $m_exam = 'active open';
+        $id_user = $auth->user()->id;
+        $exam = Exam::where('exams.id', $request->id)->first();
+        if ($exam->start_tpa==null) {
+            $data = [
+                'start_tpa' => $request->start,
+                'finish_tpa' => $request->finish
+                  ];
+                //   dd($data);
+                  Exam::query()->update($data);
+        }
+        Exam::where('id', $request->id)
+        ->update(['complete_tps' => 1]);
+        return FacadesResponse::json($exam);
+    }
+
+    public function take_exam_tpa(Guard $auth, $id)
+    {
+        $m_exam = 'active open';
+        $id_user = $auth->user()->id;
+        $exam = Exam::where('id', $id)->first();
+         
+        $id_exam = $exam->id;
+
         $user = User::select('types.name')->join('types', 'types.id', 'users.id_type')->where('users.id', '=', $auth->user()->id)->first();
         if ($user->name =="TKA Saintek") {
-            $tpa = Exam::select('detail_bank_questions.id', 'categories.name')
+            //mtk
+            $mtk = Exam::select('detail_bank_questions.id', 'categories.name')
         ->where('exams.id', $id_exam)
-        ->where('categories.name', 'TKA Saintek')
+        ->where('categories.name', 'MTK Saintek')
         ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
         ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
         ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
@@ -130,27 +233,113 @@ class ExamController extends Controller
         ->join('categories', 'categories.id', 'bank_questions.id_category')
         ->groupBy('detail_bank_questions.id', 'categories.name')
         ->inRandomOrder()->get();
-            $id_question =$main->merge($tpa);
+
+            //fisika
+            $fisika = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'Fisika')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+
+            //kimia
+            $kimia = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'Kimia')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+
+
+            //biologi
+            $biologi = Exam::select('detail_bank_questions.id', 'categories.name')
+        ->where('exams.id', $id_exam)
+        ->where('categories.name', 'Biologi')
+        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+        ->join('categories', 'categories.id', 'bank_questions.id_category')
+        ->groupBy('detail_bank_questions.id', 'categories.name')
+        ->inRandomOrder()->get();
+
+            $tpa1 =$biologi->merge($mtk);
+            $tpa2 =$fisika->merge($tpa1);
+            $id_question =$kimia->merge($tpa2);
         } else {
-            $tpa = Exam::select('detail_bank_questions.id', 'categories.name')
-        ->where('exams.id', $id_exam)
-        ->where('categories.name', 'TKA Soshum')
-        ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
-        ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
-        ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
-        ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
-        ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
-        ->join('categories', 'categories.id', 'bank_questions.id_category')
-        ->groupBy('detail_bank_questions.id', 'categories.name')
-        ->inRandomOrder()->get();
-            $id_question =$main->merge($tpa);
+            //sejarah
+            $sejarah = Exam::select('detail_bank_questions.id', 'categories.name')
+             ->where('exams.id', $id_exam)
+             ->where('categories.name', 'Sejarah')
+             ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+             ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+             ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+             ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+             ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+             ->join('categories', 'categories.id', 'bank_questions.id_category')
+             ->groupBy('detail_bank_questions.id', 'categories.name')
+             ->inRandomOrder()->get();
+     
+            //ekonomi
+            $ekonomi = Exam::select('detail_bank_questions.id', 'categories.name')
+             ->where('exams.id', $id_exam)
+             ->where('categories.name', 'Ekonomi')
+             ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+             ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+             ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+             ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+             ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+             ->join('categories', 'categories.id', 'bank_questions.id_category')
+             ->groupBy('detail_bank_questions.id', 'categories.name')
+             ->inRandomOrder()->get();
+     
+            //geografi
+            $geografi = Exam::select('detail_bank_questions.id', 'categories.name')
+             ->where('exams.id', $id_exam)
+             ->where('categories.name', 'Geografi')
+             ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+             ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+             ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+             ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+             ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+             ->join('categories', 'categories.id', 'bank_questions.id_category')
+             ->groupBy('detail_bank_questions.id', 'categories.name')
+             ->inRandomOrder()->get();
+     
+            //sosiologi
+            $sosiologi = Exam::select('detail_bank_questions.id', 'categories.name')
+             ->where('exams.id', $id_exam)
+             ->where('categories.name', 'Sosiologi')
+             ->join('schedules', 'schedules.id', '=', 'exams.id_schedule')
+             ->join('create_exams', 'create_exams.id', '=', 'schedules.id_exam')
+             ->join('detail_create_exams', 'create_exams.id', '=', 'detail_create_exams.id_create_exam')
+             ->join('detail_bank_questions', 'detail_create_exams.id_detail_bank_question', '=', 'detail_bank_questions.id')
+             ->join('bank_questions', 'detail_bank_questions.id_bank_question', '=', 'bank_questions.id')
+             ->join('categories', 'categories.id', 'bank_questions.id_category')
+             ->groupBy('detail_bank_questions.id', 'categories.name')
+             ->inRandomOrder()->get();
+     
+            $tpa1 =$sosiologi->merge($sejarah);
+            $tpa2 =$ekonomi->merge($tpa1);
+            $id_question =$geografi->merge($tpa2);
         }
         $answered = DetailExam::where('id_exam', $id_exam)->get();
         $arr_answer = array();
         foreach ($answered as $key => $value) {
             $arr_answer[$value->id_question] =  $value;
         }
-        return view('exam.take_exam', compact('m_exam', 'id_question', 'exam', 'arr_answer', 'id_exam'));
+        return view('exam.take_exam_tpa', compact('m_exam', 'id_question', 'exam', 'arr_answer', 'id_exam'));
     }
 
     public function getquestion(Request $request)
@@ -185,7 +374,7 @@ class ExamController extends Controller
         $weight=0;
         if ($answer->status == 1) {
             $status = 1;
-            // $weight = $getWeight->weight + 1;
+        // $weight = $getWeight->weight + 1;
         } else {
             $status = 0;
             // $weight = $getWeight->weight;
@@ -221,10 +410,10 @@ class ExamController extends Controller
     {
         $assessment = Exam::where('id', $request->id)->first();
         $question = DetailExam::where('id_exam', $assessment->id)->get();
-        // dd($question);
+        // dd($assessment);
 
         foreach ($question as $key => $value) {
-            $id_question = $value->id_question;       
+            $id_question = $value->id_question;
 
             $is_exists = DetailExam::where('id_exam', $request->id)
         ->where(function ($query) use ($id_question) {
@@ -249,7 +438,6 @@ class ExamController extends Controller
             }
             DetailCreateExam::where('id_detail_bank_question', $id_question)
         ->update(['weight' => $weight]);
-            
         }
         return Exam::where('id', $request->id)
       ->update(['complete' => 1]);

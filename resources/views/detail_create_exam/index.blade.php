@@ -49,8 +49,12 @@
                                                 <th>{{ $create_exam->type }}</th>
                                             </tr>
                                             <tr>
-                                                <th style="width: 25%;">Duration</th>
-                                                <th>{{ $create_exam->duration }} Minutes</th>
+                                                <th style="width: 25%;">Duration TPS</th>
+                                                <th>{{ $create_exam->duration_tps }} Minutes</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="width: 25%;">Duration TPA</th>
+                                                <th>{{ $create_exam->duration_tpa }} Minutes</th>
                                             </tr>
                                             <tr>
                                                 <th style="width: 25%;">Total Question</th>
